@@ -1,4 +1,4 @@
-package com.kris.data_management.tenant;
+package com.kris.data_management.database;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,19 +10,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-public class TenantFilter extends OncePerRequestFilter {
+public class DatabaseFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
-        String tenantId = request.getHeader("X-Tenant-ID");
+            throws ServletException, IOException {
+        String dbName = request.getHeader("X-Database-ID");
         try {
-            if (tenantId != null) {
-                TenantContext.setTenant(tenantId);
+            if (dbName != null) {
+                DatabaseContext.setCurrentDatabase(dbName);
             }
             filterChain.doFilter(request, response);
         } finally {
-            TenantContext.clear();
+            DatabaseContext.clear();
         }
     }
-}
+} 
