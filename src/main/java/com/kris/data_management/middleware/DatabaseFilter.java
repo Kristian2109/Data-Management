@@ -16,11 +16,12 @@ public class DatabaseFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String dbName = request.getHeader("X-Database-ID");
+        String dbName = request.getHeader("X-Database-Name");
         try {
-            if (dbName != null) {
-                DatabaseContext.setCurrentDatabase(dbName);
+            if (dbName == null || dbName.isBlank()) {
+                throw new IllegalArgumentException("Invalid database Name");
             }
+            DatabaseContext.setCurrentDatabase(dbName);
             filterChain.doFilter(request, response);
         } finally {
             DatabaseContext.clear();
