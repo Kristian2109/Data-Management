@@ -1,20 +1,25 @@
 package com.kris.data_management.database;
 
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
-import com.kris.data_management.repositories.DatabaseRepository;
+import com.kris.data_management.repositories.DatabaseMetadataRepository;
 import com.kris.data_management.utils.StringUtil;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DatabaseService {
 
-    private final DatabaseRepository databaseRepository;
-    private final DatabaseDatasourceService databaseManagementService;
+    private final DatabaseMetadataRepository databaseRepository;
+    private final JdbcTemplate adminJdbcTemplate;
 
-    public DatabaseService(DatabaseRepository databaseRepository, DatabaseDatasourceService databaseManagementService) {
+    public DatabaseService(
+        DatabaseMetadataRepository databaseRepository,
+        @Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate
+    ) {
         this.databaseRepository = databaseRepository;
-        this.databaseManagementService = databaseManagementService;
+        this.adminJdbcTemplate = adminJdbcTemplate;
     }
 
     @Transactional
@@ -25,7 +30,7 @@ public class DatabaseService {
         dbEntity.setDisplayName(name);
         DatabaseMetadataEntity savedEntity = databaseRepository.save(dbEntity);
 
-        databaseManagementService.createDatabaseSchema(physicalName);
+        createDatabaseSchema(physicalName);
 
         return savedEntity;
     }
@@ -36,5 +41,9 @@ public class DatabaseService {
             displayName.replace(' ', '_') +
             "_" +
             StringUtil.generateRandomString(randomPartLength);
+    }
+
+    public void createDatabaseSchema(String schemaName) {
+        adminJdbcTemplate.execute("CREATE SCHEMA IF NOT EXISTS `" + schemaName + "`");
     }
 } 

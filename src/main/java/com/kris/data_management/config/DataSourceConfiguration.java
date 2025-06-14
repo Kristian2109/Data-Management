@@ -1,8 +1,6 @@
 package com.kris.data_management.config;
 
-import com.kris.data_management.database.DatabaseDatasourceService;
 import com.kris.data_management.database.DatabaseRoutingDataSource;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
