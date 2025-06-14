@@ -1,6 +1,6 @@
 package com.kris.data_management.database;
 
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
@@ -9,11 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DatabaseRoutingDataSource extends AbstractRoutingDataSource {
 
-    private final ObjectProvider<DatabaseDatasourceService> databaseManagementServiceProvider;
+    private final DataSourceProperties databaseDataSourceProperties;
     private final Map<Object, Object> targetDataSources = new ConcurrentHashMap<>();
 
-    public DatabaseRoutingDataSource(ObjectProvider<DatabaseDatasourceService> databaseManagementServiceProvider) {
-        this.databaseManagementServiceProvider = databaseManagementServiceProvider;
+    public DatabaseRoutingDataSource(DataSourceProperties databaseDataSourceProperties) {
+        this.databaseDataSourceProperties = databaseDataSourceProperties;
         setTargetDataSources(targetDataSources);
     }
 
@@ -32,11 +32,16 @@ public class DatabaseRoutingDataSource extends AbstractRoutingDataSource {
         return (DataSource) targetDataSources.computeIfAbsent(dbName, this::buildDataSource);
     }
 
-    private DataSource buildDataSource(Object dbName) {
-        DatabaseDatasourceService service = databaseManagementServiceProvider.getIfAvailable();
-        if (service != null) {
-            return service.buildDataSourceForDatabase((String) dbName);
-        }
-        throw new IllegalStateException("DatabaseManagementService is not available to create a new DataSource.");
+    private DataSource buildDataSource(Object dbNameObject) {
+        String dbName = (String) dbNameObject;
+        String url = databaseDataSourceProperties.getUrl() + dbName + "?createDatabaseIfNotExist=true&useSSL=false";
+
+        DataSourceProperties customDataSourceProperties = new DataSourceProperties();
+        customDataSourceProperties.setUrl(url);
+        customDataSourceProperties.setUsername(databaseDataSourceProperties.getUsername());
+        customDataSourceProperties.setPassword(databaseDataSourceProperties.getPassword());
+        customDataSourceProperties.setDriverClassName(databaseDataSourceProperties.getDriverClassName());
+
+        return customDataSourceProperties.initializeDataSourceBuilder().build();
     }
 } 

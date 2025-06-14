@@ -40,9 +40,9 @@ public class DataSourceConfiguration {
 
     @Bean("routingDataSource")
     @Primary
-    public DataSource routingDataSource(ObjectProvider<DatabaseDatasourceService> databaseManagementServiceProvider,
+    public DataSource routingDataSource(@Qualifier("databaseDataSourceProperties") DataSourceProperties databaseDataSourceProperties,
                                         @Qualifier("adminDataSource") DataSource adminDataSource) {
-        DatabaseRoutingDataSource routingDataSource = new DatabaseRoutingDataSource(databaseManagementServiceProvider);
+        DatabaseRoutingDataSource routingDataSource = new DatabaseRoutingDataSource(databaseDataSourceProperties);
         routingDataSource.setTargetDataSources(new ConcurrentHashMap<>());
         routingDataSource.setDefaultTargetDataSource(adminDataSource);
         return routingDataSource;
