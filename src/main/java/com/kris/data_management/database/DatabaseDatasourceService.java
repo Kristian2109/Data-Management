@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 
 @Service
-public class DatabaseManagementService {
+public class DatabaseDatasourceService {
 
     private final JdbcTemplate adminJdbcTemplate;
     private final DataSourceProperties dataSourceProperties;
 
-    public DatabaseManagementService(@Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate,
-                                   @Qualifier("databaseDataSourceProperties") DataSourceProperties dataSourceProperties) {
+    public DatabaseDatasourceService(@Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate,
+                                     @Qualifier("databaseDataSourceProperties") DataSourceProperties dataSourceProperties) {
         this.adminJdbcTemplate = adminJdbcTemplate;
         this.dataSourceProperties = dataSourceProperties;
     }

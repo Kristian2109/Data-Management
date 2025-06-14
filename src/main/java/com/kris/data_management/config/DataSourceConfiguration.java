@@ -1,6 +1,6 @@
 package com.kris.data_management.config;
 
-import com.kris.data_management.database.DatabaseManagementService;
+import com.kris.data_management.database.DatabaseDatasourceService;
 import com.kris.data_management.database.DatabaseRoutingDataSource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,7 +40,7 @@ public class DataSourceConfiguration {
 
     @Bean("routingDataSource")
     @Primary
-    public DataSource routingDataSource(ObjectProvider<DatabaseManagementService> databaseManagementServiceProvider,
+    public DataSource routingDataSource(ObjectProvider<DatabaseDatasourceService> databaseManagementServiceProvider,
                                         @Qualifier("adminDataSource") DataSource adminDataSource) {
         DatabaseRoutingDataSource routingDataSource = new DatabaseRoutingDataSource(databaseManagementServiceProvider);
         routingDataSource.setTargetDataSources(new ConcurrentHashMap<>());

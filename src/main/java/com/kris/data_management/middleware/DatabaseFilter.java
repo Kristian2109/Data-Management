@@ -1,5 +1,6 @@
-package com.kris.data_management.database;
+package com.kris.data_management.middleware;
 
+import com.kris.data_management.database.DatabaseContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

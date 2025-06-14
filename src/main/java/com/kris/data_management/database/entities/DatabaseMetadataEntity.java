@@ -1,4 +1,4 @@
-package com.kris.data_management.entities;
+package com.kris.data_management.database.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,8 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "databases")
-public class DatabaseEntity {
+@Table(name = "database_management")
+public class DatabaseMetadataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

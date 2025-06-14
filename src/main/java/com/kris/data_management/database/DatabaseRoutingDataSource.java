@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DatabaseRoutingDataSource extends AbstractRoutingDataSource {
 
-    private final ObjectProvider<DatabaseManagementService> databaseManagementServiceProvider;
+    private final ObjectProvider<DatabaseDatasourceService> databaseManagementServiceProvider;
     private final Map<Object, Object> targetDataSources = new ConcurrentHashMap<>();
 
-    public DatabaseRoutingDataSource(ObjectProvider<DatabaseManagementService> databaseManagementServiceProvider) {
+    public DatabaseRoutingDataSource(ObjectProvider<DatabaseDatasourceService> databaseManagementServiceProvider) {
         this.databaseManagementServiceProvider = databaseManagementServiceProvider;
         setTargetDataSources(targetDataSources);
     }
@@ -33,7 +33,7 @@ public class DatabaseRoutingDataSource extends AbstractRoutingDataSource {
     }
 
     private DataSource buildDataSource(Object dbName) {
-        DatabaseManagementService service = databaseManagementServiceProvider.getIfAvailable();
+        DatabaseDatasourceService service = databaseManagementServiceProvider.getIfAvailable();
         if (service != null) {
             return service.buildDataSourceForDatabase((String) dbName);
         }

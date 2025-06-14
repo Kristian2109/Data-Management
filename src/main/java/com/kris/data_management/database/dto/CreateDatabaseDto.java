@@ -1,6 +1,6 @@
-package com.kris.data_management.database;
+package com.kris.data_management.database.dto;
 
-public class DatabaseRequestDto {
+public class CreateDatabaseDto {
     private String displayName;
 
     public String getDisplayName() {
