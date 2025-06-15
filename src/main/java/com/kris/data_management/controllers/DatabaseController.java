@@ -18,7 +18,7 @@ public class DatabaseController {
 
     @PostMapping
     public ResponseEntity<DatabaseMetadataEntity> createDatabase(@RequestBody CreateDatabaseDto request) {
-        DatabaseMetadataEntity createdDatabase = databaseService.createDatabase(request.getDisplayName());
+        DatabaseMetadataEntity createdDatabase = databaseService.createDatabase(request);
         return ResponseEntity.ok(createdDatabase);
     }
 } 

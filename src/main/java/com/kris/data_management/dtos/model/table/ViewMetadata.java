@@ -1,6 +1,6 @@
 package com.kris.data_management.dtos.model.table;
 
-import com.kris.data_management.dtos.model.query.Query;
+import com.kris.data_management.dtos.model.logicalQuery.Query;
 
 public record ViewMetadata(
     Long id,

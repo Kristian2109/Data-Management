@@ -1,8 +1,9 @@
 package com.kris.data_management.database;
 
+import com.kris.data_management.database.dto.CreateDatabaseDto;
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
-import com.kris.data_management.repositories.DatabaseMetadataRepository;
-import com.kris.data_management.utils.StringUtil;
+import com.kris.data_management.repositories.DatabaseMetadataRepositoryJpa;
+import com.kris.data_management.utils.StorageUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -11,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DatabaseService {
 
-    private final DatabaseMetadataRepository databaseRepository;
+    private final DatabaseMetadataRepositoryJpa databaseRepository;
     private final JdbcTemplate adminJdbcTemplate;
 
+    private static final String DB_PREFIX = "db";
+    private static final Integer RANDOM_PART_SIZE = 5;
+
     public DatabaseService(
-        DatabaseMetadataRepository databaseRepository,
+        DatabaseMetadataRepositoryJpa databaseRepository,
         @Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate
     ) {
         this.databaseRepository = databaseRepository;
@@ -23,24 +27,16 @@ public class DatabaseService {
     }
 
     @Transactional
-    public DatabaseMetadataEntity createDatabase(String name) {
+    public DatabaseMetadataEntity createDatabase(CreateDatabaseDto db) {
         DatabaseMetadataEntity dbEntity = new DatabaseMetadataEntity();
-        String physicalName = createPhysicalName(name);
+        String physicalName = StorageUtils.createPhysicalName(DB_PREFIX, db.getDisplayName(), RANDOM_PART_SIZE);
         dbEntity.setPhysicalName(physicalName);
-        dbEntity.setDisplayName(name);
+        dbEntity.setDisplayName(db.getDisplayName());
         DatabaseMetadataEntity savedEntity = databaseRepository.save(dbEntity);
 
-        createDatabaseSchema(physicalName);
+        createDatabaseSchema(dbEntity.getPhysicalName());
 
         return savedEntity;
-    }
-
-    private String createPhysicalName(String displayName) {
-        int randomPartLength = 5;
-        return "db_" +
-            displayName.replace(' ', '_') +
-            "_" +
-            StringUtil.generateRandomString(randomPartLength);
     }
 
     public void createDatabaseSchema(String schemaName) {

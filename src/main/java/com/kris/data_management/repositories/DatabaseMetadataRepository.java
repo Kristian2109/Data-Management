@@ -1,9 +1,11 @@
 package com.kris.data_management.repositories;
 
-import com.kris.data_management.database.entities.DatabaseMetadataEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.kris.data_management.dtos.model.DatabaseMetadata;
 
-@Repository
-public interface DatabaseMetadataRepository extends JpaRepository<DatabaseMetadataEntity, Long> {
+import java.util.List;
+
+public interface DatabaseMetadataRepository {
+    DatabaseMetadata create(String physicalName, String displayName);
+    List<DatabaseMetadata> getAll();
+    DatabaseMetadata get(Long id);
 }

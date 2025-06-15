@@ -1,14 +1,19 @@
 package com.kris.data_management.repositories;
 
-import com.kris.data_management.dto.CreateTableDto;
+import com.kris.data_management.dtos.CreatePhysicalColumnDto;
+import com.kris.data_management.dtos.CreateTableDto;
+import com.kris.data_management.dtos.model.logicalQuery.QueryResult;
+import com.kris.data_management.dtos.model.physicalQuery.PhysicalQuery;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
-public class TableRepository {
+public class TableRepository implements PhysicalTableRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -22,13 +27,13 @@ public class TableRepository {
     }
 
     private String buildCreateTableSql(CreateTableDto createTableDto) {
-        if (!isValidIdentifier(createTableDto.getTableName())) {
+        if (isValidIdentifier(createTableDto.getTableName())) {
             throw new IllegalArgumentException("Invalid table name. Use only letters, numbers, and underscores.");
         }
 
         String columns = createTableDto.getColumns().stream()
             .map(col -> {
-                if (!isValidIdentifier(col.getName()) || !isValidDataType(col.getType())) {
+                if (isValidIdentifier(col.getName()) || !isValidDataType(col.getType())) {
                     throw new IllegalArgumentException("Invalid column name or data type for column: " + col.getName());
                 }
                 return "`" + col.getName() + "` " + col.getType();
@@ -43,7 +48,7 @@ public class TableRepository {
     }
 
     private boolean isValidIdentifier(String name) {
-        return name != null && name.matches("[a-zA-Z0-9_]+");
+        return name == null || !name.matches("[a-zA-Z0-9_]+");
     }
 
     private boolean isValidDataType(String type) {
@@ -55,4 +60,29 @@ public class TableRepository {
             upperType.startsWith("BOOLEAN") || upperType.startsWith("DECIMAL") ||
             upperType.startsWith("DOUBLE") || upperType.startsWith("FLOAT");
     }
-} 
+
+    @Override
+    public void createTable(String tableName, List<CreatePhysicalColumnDto> columns) {
+
+    }
+
+    @Override
+    public void addColumn(String tableName, CreatePhysicalColumnDto column) {
+
+    }
+
+    @Override
+    public void addRecord(String tableName, Map<String, String> valuePerColumn) {
+
+    }
+
+    @Override
+    public void addRecords(String tableName, List<Map<String, String>> records) {
+
+    }
+
+    @Override
+    public QueryResult executeQuery(PhysicalQuery query) {
+        return null;
+    }
+}

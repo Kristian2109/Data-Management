@@ -1,6 +1,6 @@
 package com.kris.data_management.controllers;
 
-import com.kris.data_management.dto.CreateTableDto;
+import com.kris.data_management.dtos.CreateTableDto;
 import com.kris.data_management.services.TableService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

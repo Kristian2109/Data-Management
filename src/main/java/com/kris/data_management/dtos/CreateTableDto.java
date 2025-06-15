@@ -1,4 +1,4 @@
-package com.kris.data_management.dto;
+package com.kris.data_management.dtos;
 
 import java.util.List;
 
