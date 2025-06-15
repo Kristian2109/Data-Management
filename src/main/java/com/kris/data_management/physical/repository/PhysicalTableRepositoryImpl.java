@@ -21,6 +21,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public void createTable(CreatePhysicalTableDto dto) {
         String sql = buildCreateTableSql(dto);
         jdbcTemplate.execute(sql);

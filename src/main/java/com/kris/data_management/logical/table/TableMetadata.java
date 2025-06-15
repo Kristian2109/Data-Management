@@ -7,19 +7,22 @@ import java.util.Objects;
 public class TableMetadata {
     private final Long id;
     private String displayName = "";
+    private final String physicalName;
     private List<ColumnMetadata> columns = new ArrayList<>();
     private List<ViewMetadata> views = new ArrayList<>();
 
-    public TableMetadata(Long id, String displayName, List<ColumnMetadata> columns, List<ViewMetadata> views) {
+    public TableMetadata(Long id, String displayName, String physicalName, List<ColumnMetadata> columns, List<ViewMetadata> views) {
         this.id = id;
         this.displayName = displayName;
+        this.physicalName = physicalName;
         this.columns = columns;
         this.views = views;
     }
 
-    public TableMetadata(Long id, String displayName) {
+    public TableMetadata(Long id, String displayName, String physicalName) {
         this.id = id;
         this.displayName = displayName;
+        this.physicalName = physicalName;
     }
 
     public Long getId() {
