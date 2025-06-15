@@ -1,7 +1,7 @@
 package com.kris.data_management.controllers;
 
 import com.kris.data_management.database.dto.CreateDatabaseDto;
-import com.kris.data_management.database.DatabaseService;
+import com.kris.data_management.services.DatabaseService;
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
