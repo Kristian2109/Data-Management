@@ -1,13 +1,14 @@
 package com.kris.data_management.logical.repository;
 
 import com.kris.data_management.logical.table.ColumnMetadata;
+import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 
 import java.util.List;
 
 public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     @Override
-    public TableMetadata createTable(String displayName, String physicalName, List<String> columnNames) {
+    public TableMetadata createTable(CreateTableMetadataDto tableDto) {
         return null;
     }
 

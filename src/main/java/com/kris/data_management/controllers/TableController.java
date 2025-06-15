@@ -1,6 +1,8 @@
 package com.kris.data_management.controllers;
 
-import com.kris.data_management.physical.dto.CreateTableDto;
+import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.logical.table.CreateTableMetadataDto;
+import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.services.TableService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +21,8 @@ public class TableController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createTable(@RequestBody CreateTableDto createTableDto) {
-        tableService.createTable(createTableDto);
-        return ResponseEntity.ok("Table '" + createTableDto.getTableName() + "' created successfully in the specified database.");
+    public ResponseEntity<TableMetadata> createTable(@RequestBody CreateTableDto tableDto) {
+        TableMetadata result = tableService.createTable(tableDto);
+        return ResponseEntity.ok(result);
     }
 } 

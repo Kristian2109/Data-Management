@@ -1,11 +1,11 @@
-package com.kris.data_management.logical.table;
+package com.kris.data_management.common;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ColumnDataType {
     NUMBER("number"),
     TEXT("text"),
-    LONG_TEXT("long-text"),
+    LONG_TEXT("long_text"),
     FOREIGN_KEY("foreign_key");
 
     private final String type;

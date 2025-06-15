@@ -3,10 +3,11 @@ package com.kris.data_management.logical.repository;
 import java.util.List;
 
 import com.kris.data_management.logical.table.ColumnMetadata;
+import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 
 public interface TableMetadataRepository {
-    TableMetadata createTable(String displayName, String physicalName, List<String> columnNames);
+    TableMetadata createTable(CreateTableMetadataDto tableDto);
     ColumnMetadata addColumn(Long tableId, String columnName);
     TableMetadata getTable(Long tableId);
     List<TableMetadata> getAllTables();

@@ -53,7 +53,7 @@ public class TableMetadata {
     public String toString() {
         return "TableMetadata{" +
                 "id=" + id +
-                ", displayName='" + displayName + '\'' +
+                ", columnName='" + displayName + '\'' +
                 ", columns=" + columns +
                 '}';
     }

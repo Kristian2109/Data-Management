@@ -1,7 +1,7 @@
 package com.kris.data_management.physical.repository;
 
 import com.kris.data_management.physical.dto.CreatePhysicalColumnDto;
-import com.kris.data_management.physical.dto.CreateTableDto;
+import com.kris.data_management.physical.dto.CreatePhysicalTableDto;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,49 +21,19 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void createTable(CreateTableDto createTableDto) {
-        String sql = buildCreateTableSql(createTableDto);
+    public void createTable(CreatePhysicalTableDto dto) {
+        String sql = buildCreateTableSql(dto);
         jdbcTemplate.execute(sql);
     }
 
-    private String buildCreateTableSql(CreateTableDto createTableDto) {
-        if (isValidIdentifier(createTableDto.getTableName())) {
-            throw new IllegalArgumentException("Invalid table name. Use only letters, numbers, and underscores.");
-        }
-
-        String columns = createTableDto.getColumns().stream()
+    private String buildCreateTableSql(CreatePhysicalTableDto createTableDto) {
+        String columns = createTableDto.columns().stream()
             .map(col -> {
-                if (isValidIdentifier(col.getName()) || !isValidDataType(col.getType())) {
-                    throw new IllegalArgumentException("Invalid column name or data type for column: " + col.getName());
-                }
-                return "`" + col.getName() + "` " + col.getType();
+                return "`" + col.name() + "` " + col.name();
             })
             .collect(Collectors.joining(", "));
 
-        if (columns.isEmpty()) {
-            throw new IllegalArgumentException("Table must have at least one column.");
-        }
-
-        return "CREATE TABLE `" + createTableDto.getTableName() + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columns + ")";
-    }
-
-    private boolean isValidIdentifier(String name) {
-        return name == null || !name.matches("[a-zA-Z0-9_]+");
-    }
-
-    private boolean isValidDataType(String type) {
-        String upperType = type.toUpperCase();
-        // Basic validation for common types
-        return upperType.startsWith("VARCHAR") || upperType.startsWith("INT") ||
-            upperType.startsWith("BIGINT") || upperType.startsWith("TEXT") ||
-            upperType.startsWith("DATE") || upperType.startsWith("TIMESTAMP") ||
-            upperType.startsWith("BOOLEAN") || upperType.startsWith("DECIMAL") ||
-            upperType.startsWith("DOUBLE") || upperType.startsWith("FLOAT");
-    }
-
-    @Override
-    public void createTable(String tableName, List<CreatePhysicalColumnDto> columns) {
-
+        return "CREATE TABLE `" + createTableDto.name() + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columns + ")";
     }
 
     @Override

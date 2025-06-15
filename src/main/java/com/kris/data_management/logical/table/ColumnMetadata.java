@@ -1,12 +1,14 @@
 package com.kris.data_management.logical.table;
 
+import com.kris.data_management.common.ColumnDataType;
+
 public class ColumnMetadata {
     private final Long id;
     private final String displayName;
     private final String physicalName;
-    private final String type;
+    private final ColumnDataType type;
 
-    public ColumnMetadata(Long id, String displayName, String physicalName, String type) {
+    public ColumnMetadata(Long id, String displayName, String physicalName, ColumnDataType type) {
         this.id = id;
         this.displayName = displayName;
         this.physicalName = physicalName;
@@ -25,7 +27,7 @@ public class ColumnMetadata {
         return physicalName;
     }
 
-    public String getType() {
+    public ColumnDataType getType() {
         return type;
     }
 }
