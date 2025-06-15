@@ -1,8 +1,9 @@
 package com.kris.data_management.services;
 
 import com.kris.data_management.database.dto.CreateDatabaseDto;
+import com.kris.data_management.database.dto.DatabaseMetadata;
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
-import com.kris.data_management.database.repository.DatabaseMetadataRepositoryJpa;
+import com.kris.data_management.database.repository.DatabaseMetadataRepository;
 import com.kris.data_management.utils.StorageUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DatabaseService {
 
-    private final DatabaseMetadataRepositoryJpa databaseRepository;
+    private final DatabaseMetadataRepository databaseRepository;
     private final JdbcTemplate adminJdbcTemplate;
 
     private static final String DB_PREFIX = "db";
     private static final Integer RANDOM_PART_SIZE = 5;
 
     public DatabaseService(
-        DatabaseMetadataRepositoryJpa databaseRepository,
+        DatabaseMetadataRepository databaseRepository,
         @Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate
     ) {
         this.databaseRepository = databaseRepository;
@@ -27,16 +28,11 @@ public class DatabaseService {
     }
 
     @Transactional
-    public DatabaseMetadataEntity createDatabase(CreateDatabaseDto db) {
-        DatabaseMetadataEntity dbEntity = new DatabaseMetadataEntity();
+    public DatabaseMetadata createDatabase(CreateDatabaseDto db) {
         String physicalName = StorageUtils.createPhysicalName(DB_PREFIX, db.getDisplayName(), RANDOM_PART_SIZE);
-        dbEntity.setPhysicalName(physicalName);
-        dbEntity.setDisplayName(db.getDisplayName());
-        DatabaseMetadataEntity savedEntity = databaseRepository.save(dbEntity);
+        createDatabaseSchema(physicalName);
 
-        createDatabaseSchema(dbEntity.getPhysicalName());
-
-        return savedEntity;
+        return databaseRepository.create(physicalName, db.getDisplayName());
     }
 
     public void createDatabaseSchema(String schemaName) {
@@ -67,5 +63,13 @@ public class DatabaseService {
                 "query_content TEXT NOT NULL, " +
                 "CONSTRAINT fk_view_table FOREIGN KEY (table_id) REFERENCES `" + schemaName + "`.`table_metadata`(id) ON DELETE CASCADE" +
                 ")");
+    }
+
+    public DatabaseMetadata getDatabase(Long id) {
+        return databaseRepository.get(id);
+    }
+
+    public java.util.List<DatabaseMetadata> getAllDatabases() {
+        return databaseRepository.getAll();
     }
 } 

@@ -1,8 +1,8 @@
 package com.kris.data_management.controllers;
 
 import com.kris.data_management.database.dto.CreateDatabaseDto;
+import com.kris.data_management.database.dto.DatabaseMetadata;
 import com.kris.data_management.services.DatabaseService;
-import com.kris.data_management.database.entities.DatabaseMetadataEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +17,22 @@ public class DatabaseController {
     }
 
     @PostMapping
-    public ResponseEntity<DatabaseMetadataEntity> createDatabase(@RequestBody CreateDatabaseDto request) {
-        DatabaseMetadataEntity createdDatabase = databaseService.createDatabase(request);
+    public ResponseEntity<DatabaseMetadata> createDatabase(@RequestBody CreateDatabaseDto request) {
+        DatabaseMetadata createdDatabase = databaseService.createDatabase(request);
         return ResponseEntity.ok(createdDatabase);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DatabaseMetadata> getDatabase(@PathVariable Long id) {
+        DatabaseMetadata database = databaseService.getDatabase(id);
+        if (database == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(database);
+    }
+
+    @GetMapping
+    public ResponseEntity<java.util.List<DatabaseMetadata>> getAllDatabases() {
+        return ResponseEntity.ok(databaseService.getAllDatabases());
     }
 } 
