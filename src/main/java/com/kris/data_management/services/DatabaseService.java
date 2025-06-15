@@ -41,5 +41,31 @@ public class DatabaseService {
 
     public void createDatabaseSchema(String schemaName) {
         adminJdbcTemplate.execute("CREATE SCHEMA IF NOT EXISTS `" + schemaName + "`");
+        createMetadataTables(schemaName);
+    }
+
+    private void createMetadataTables(String schemaName) {
+        adminJdbcTemplate.execute("CREATE TABLE IF NOT EXISTS `" + schemaName + "`.`table_metadata` (" +
+                "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
+                "display_name VARCHAR(255) NOT NULL, " +
+                "physical_name VARCHAR(255) NOT NULL" +
+                ")");
+
+        adminJdbcTemplate.execute("CREATE TABLE IF NOT EXISTS `" + schemaName + "`.`column_metadata` (" +
+                "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
+                "display_name VARCHAR(255) NOT NULL, " +
+                "physical_name VARCHAR(255) NOT NULL, " +
+                "type VARCHAR(255) NOT NULL, " +
+                "table_id BIGINT, " +
+                "CONSTRAINT fk_column_table FOREIGN KEY (table_id) REFERENCES `" + schemaName + "`.`table_metadata`(id) ON DELETE CASCADE" +
+                ")");
+
+        adminJdbcTemplate.execute("CREATE TABLE IF NOT EXISTS `" + schemaName + "`.`view_metadata` (" +
+                "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
+                "table_id BIGINT NOT NULL, " +
+                "name VARCHAR(255) NOT NULL, " +
+                "query_content TEXT NOT NULL, " +
+                "CONSTRAINT fk_view_table FOREIGN KEY (table_id) REFERENCES `" + schemaName + "`.`table_metadata`(id) ON DELETE CASCADE" +
+                ")");
     }
 } 

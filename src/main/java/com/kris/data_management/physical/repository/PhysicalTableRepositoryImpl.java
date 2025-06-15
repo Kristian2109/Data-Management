@@ -30,7 +30,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     private String buildCreateTableSql(CreatePhysicalTableDto createTableDto) {
         String columns = createTableDto.columns().stream()
             .map(col -> {
-                return "`" + col.name() + "` " + col.name();
+                return "`" + col.name() + "` " + col.type().getSqlType();
             })
             .collect(Collectors.joining(", "));
 
