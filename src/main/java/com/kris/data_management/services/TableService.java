@@ -3,6 +3,7 @@ package com.kris.data_management.services;
 import com.kris.data_management.common.ColumnTypeMapper;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.database.DatabaseContext;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
@@ -65,6 +66,11 @@ public class TableService {
         physicalTableRepository.addColumn(table.getPhysicalName(), TableService.mapToPhysicalColumn(columnMetadata));
 
         return columnMetadata;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TableMetadata> getTablesForDatabase() {
+        return tableMetadataRepository.getAllTables(DatabaseContext.getCurrentDatabase());
     }
 
     private static String createUniqueTableName(String displayName) {

@@ -39,8 +39,11 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
-    public List<TableMetadata> getAllTables() {
-        return null;
+    public List<TableMetadata> getAllTables(String physicalDatabaseName) {
+        return repositoryJpa.findAllByPhysicalDatabaseName(physicalDatabaseName)
+            .stream()
+            .map(TableMetadataMapper::toDomain)
+            .toList();
     }
 
     @Override

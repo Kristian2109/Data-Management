@@ -35,14 +35,18 @@ public class TableMetadataEntity {
     @JoinColumn(name = "table_id")
     private List<ViewMetadataEntity> views = new ArrayList<>();
 
+    @Column(name = "physical_database_name", nullable = false)
+    private String physicalDatabaseName;
+
     public TableMetadataEntity() {}
 
-    public TableMetadataEntity(Long id, String displayName, String physicalName, List<ColumnMetadataEntity> columns, List<ViewMetadataEntity> views) {
+    public TableMetadataEntity(Long id, String displayName, String physicalName, String physicalDatabaseName, List<ColumnMetadataEntity> columns, List<ViewMetadataEntity> views) {
         this.id = id;
         this.displayName = displayName;
         this.physicalName = physicalName;
         this.columns = columns;
         this.views = views;
+        this.physicalDatabaseName = physicalDatabaseName;
     }
 
     public Long getId() {
@@ -83,5 +87,13 @@ public class TableMetadataEntity {
 
     public void setViews(List<ViewMetadataEntity> views) {
         this.views = views;
+    }
+
+    public String getPhysicalDatabaseName() {
+        return physicalDatabaseName;
+    }
+
+    public void setPhysicalDatabaseName(String physicalDatabaseName) {
+        this.physicalDatabaseName = physicalDatabaseName;
     }
 }

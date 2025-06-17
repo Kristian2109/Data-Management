@@ -44,7 +44,8 @@ public class DatabaseService {
         adminJdbcTemplate.execute("CREATE TABLE IF NOT EXISTS `" + schemaName + "`.`table_metadata` (" +
                 "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
                 "display_name VARCHAR(255) NOT NULL, " +
-                "physical_name VARCHAR(255) NOT NULL" +
+                "physical_name VARCHAR(255) NOT NULL, " +
+                "physical_database_name VARCHAR(255) NOT NULL" +
                 ")");
 
         adminJdbcTemplate.execute("CREATE TABLE IF NOT EXISTS `" + schemaName + "`.`column_metadata` (" +
