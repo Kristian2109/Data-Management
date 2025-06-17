@@ -1,10 +1,13 @@
 package com.kris.data_management.controllers;
 
+import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.services.TableService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +26,12 @@ public class TableController {
     @PostMapping
     public ResponseEntity<TableMetadata> createTable(@RequestBody CreateTableDto tableDto) {
         TableMetadata result = tableService.createTable(tableDto);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/{tableId}")
+    public ResponseEntity<ColumnMetadata> createColumn(@PathVariable Long tableId,  @RequestBody CreateColumnDto columnDto) {
+        ColumnMetadata result = tableService.createColumn(tableId, columnDto);
         return ResponseEntity.ok(result);
     }
 } 

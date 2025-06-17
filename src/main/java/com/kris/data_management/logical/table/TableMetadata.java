@@ -6,7 +6,12 @@ import java.util.Objects;
 
 public class TableMetadata {
     private final Long id;
-    private String displayName = "";
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    private String displayName;
     private final String physicalName;
     private List<ColumnMetadata> columns = new ArrayList<>();
     private List<ViewMetadata> views = new ArrayList<>();
@@ -68,6 +73,11 @@ public class TableMetadata {
     public List<ViewMetadata> getViews() {
         return views;
     }
+
+    public String getPhysicalName() {
+        return physicalName;
+    }
+
 
     public void addView(ViewMetadata view) {
         views.add(view);

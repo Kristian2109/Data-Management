@@ -29,17 +29,18 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     private String buildCreateTableSql(CreatePhysicalTableDto createTableDto) {
         String columns = createTableDto.columns().stream()
-            .map(col -> {
-                return "`" + col.name() + "` " + col.type().getSqlType();
-            })
+            .map(col -> "`" + col.name() + "` " + col.type().getSqlType())
             .collect(Collectors.joining(", "));
 
         return "CREATE TABLE `" + createTableDto.name() + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columns + ")";
     }
 
     @Override
-    public void addColumn(String tableName, CreatePhysicalColumnDto column) {
+    public void addColumn(String tableName, CreatePhysicalColumnDto col) {
+        String sql = "ALTER TABLE " + tableName + "\n" +
+            "ADD " + "`" + col.name() + "` " + col.type().getSqlType() + ";";
 
+        jdbcTemplate.execute(sql);
     }
 
     @Override

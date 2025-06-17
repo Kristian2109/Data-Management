@@ -3,6 +3,8 @@ package com.kris.data_management.utils;
 import com.kris.data_management.logical.entities.TableMetadataEntity;
 import com.kris.data_management.logical.entities.ColumnMetadataEntity;
 import com.kris.data_management.logical.entities.ViewMetadataEntity;
+import com.kris.data_management.logical.table.CreateColumnMetadataDto;
+import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;
@@ -43,9 +45,9 @@ public class TableMetadataMapper {
         );
     }
 
-    public static TableMetadataEntity fromCreateDto(com.kris.data_management.logical.table.CreateTableMetadataDto dto) {
+    public static TableMetadataEntity fromCreateDto(CreateTableMetadataDto dto) {
         List<ColumnMetadataEntity> columns = dto.columns().stream()
-            .map(colDto -> new ColumnMetadataEntity(null, colDto.displayName(), colDto.physicalName(), colDto.type()))
+            .map(TableMetadataMapper::fromCreateDto)
             .collect(Collectors.toList());
         return new TableMetadataEntity(
             null,
@@ -54,5 +56,9 @@ public class TableMetadataMapper {
             columns,
             new java.util.ArrayList<>()
         );
+    }
+
+    public static ColumnMetadataEntity fromCreateDto(CreateColumnMetadataDto dto) {
+        return new ColumnMetadataEntity(null, dto.displayName(), dto.physicalName(), dto.type());
     }
 } 

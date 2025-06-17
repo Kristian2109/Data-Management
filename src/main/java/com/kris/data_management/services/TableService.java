@@ -1,8 +1,10 @@
 package com.kris.data_management.services;
 
 import com.kris.data_management.common.ColumnTypeMapper;
+import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
+import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
@@ -32,9 +34,7 @@ public class TableService {
     @Transactional
     public TableMetadata createTable(CreateTableDto tableDto) {
         List<CreateColumnMetadataDto> columns = tableDto.columns().stream()
-            .map(c ->
-                new CreateColumnMetadataDto(c.displayName(), createUniqueColumnName(c.displayName()), c.type())
-            )
+            .map(TableService::mapToColumnMetadata)
             .toList();
         String physicalTableName = createUniqueTableName(tableDto.displayName());
         CreateTableMetadataDto tableMetadataCreate =
@@ -43,7 +43,7 @@ public class TableService {
         TableMetadata tableMetadata = this.tableMetadataRepository.createTable(tableMetadataCreate);
 
         List<CreatePhysicalColumnDto> physicalColumnDto = tableMetadata.getColumns().stream()
-            .map(c -> new CreatePhysicalColumnDto(ColumnTypeMapper.map(c.getType()), c.getPhysicalName()))
+            .map(TableService::mapToPhysicalColumn)
             .toList();
         CreatePhysicalTableDto createPhysicalTableDto = new CreatePhysicalTableDto(physicalTableName, physicalColumnDto);
 
@@ -52,11 +52,35 @@ public class TableService {
         return tableMetadata;
     }
 
-    public String createUniqueTableName(String displayName) {
+    @Transactional
+    public ColumnMetadata createColumn(Long tableId, CreateColumnDto columnDto) {
+        CreateColumnMetadataDto columnMetadataDto = TableService.mapToColumnMetadata(columnDto);
+        TableMetadata table = this.tableMetadataRepository.addColumn(tableId, columnMetadataDto);
+
+        ColumnMetadata columnMetadata = table.getColumns().stream()
+            .filter(c -> c.getPhysicalName().equals(columnMetadataDto.physicalName()))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Column metadata for table " + table.getDisplayName() + " was not added properly"));
+
+        physicalTableRepository.addColumn(table.getPhysicalName(), TableService.mapToPhysicalColumn(columnMetadata));
+
+        return columnMetadata;
+    }
+
+    private static String createUniqueTableName(String displayName) {
         return StorageUtils.createPhysicalName(TABLE_PREFIX, displayName, RANDOM_PART_SIZE);
     }
 
-    public String createUniqueColumnName(String displayName) {
+    private static String createUniqueColumnName(String displayName) {
         return StorageUtils.createPhysicalName(COLUMN_PREFIX, displayName, RANDOM_PART_SIZE);
     }
+
+    private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c) {
+        return new CreateColumnMetadataDto(c.displayName(), createUniqueColumnName(c.displayName()), c.type());
+    }
+
+    private static CreatePhysicalColumnDto mapToPhysicalColumn(ColumnMetadata c) {
+        return new CreatePhysicalColumnDto(ColumnTypeMapper.map(c.getType()), c.getPhysicalName());
+    }
+
 } 

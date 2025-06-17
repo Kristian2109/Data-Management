@@ -1,14 +1,14 @@
 package com.kris.data_management.logical.repository;
 
 import com.kris.data_management.logical.entities.TableMetadataEntity;
-import com.kris.data_management.logical.table.ColumnMetadata;
+import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.utils.TableMetadataMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 @Repository
 public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     private final TableMetadataRepositoryJpa repositoryJpa;
@@ -24,8 +24,13 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
-    public ColumnMetadata addColumn(Long tableId, String columnName) {
-        return null;
+    public TableMetadata addColumn(Long tableId, CreateColumnMetadataDto columnMetadataDto) {
+        TableMetadataEntity entity = repositoryJpa.findById(tableId)
+            .orElseThrow(() -> new EntityNotFoundException("Table with id " + tableId + " not found"));
+
+        entity.getColumns().add(TableMetadataMapper.fromCreateDto(columnMetadataDto));
+        entity = repositoryJpa.save(entity);
+        return TableMetadataMapper.toDomain(entity);
     }
 
     @Override
