@@ -10,5 +10,4 @@ public record Query(
     List<OrderBy> orders,
     Pagination pagination,
     List<Join> joins
-) {
-}
+) { }

@@ -11,6 +11,7 @@ import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.physical.dto.CreatePhysicalColumnDto;
 import com.kris.data_management.physical.dto.CreatePhysicalTableDto;
+import com.kris.data_management.physical.repository.PhysicalTableRepository;
 import com.kris.data_management.physical.repository.PhysicalTableRepositoryImpl;
 import com.kris.data_management.utils.StorageUtils;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class TableService {
     private static final String COLUMN_PREFIX = "col";
     private static final Integer RANDOM_PART_SIZE = 5;
 
-    private final PhysicalTableRepositoryImpl physicalTableRepository;
+    private final PhysicalTableRepository physicalTableRepository;
     private final TableMetadataRepository tableMetadataRepository;
 
     public TableService(PhysicalTableRepositoryImpl tableRepository, TableMetadataRepository tableMetadataRepository) {
@@ -56,7 +57,7 @@ public class TableService {
     @Transactional
     public ColumnMetadata createColumn(Long tableId, CreateColumnDto columnDto) {
         CreateColumnMetadataDto columnMetadataDto = TableService.mapToColumnMetadata(columnDto);
-        TableMetadata table = this.tableMetadataRepository.addColumn(tableId, columnMetadataDto);
+        TableMetadata table = tableMetadataRepository.addColumn(tableId, columnMetadataDto);
 
         ColumnMetadata columnMetadata = table.getColumns().stream()
             .filter(c -> c.getPhysicalName().equals(columnMetadataDto.physicalName()))
@@ -70,7 +71,12 @@ public class TableService {
 
     @Transactional(readOnly = true)
     public List<TableMetadata> getTablesForDatabase() {
-        return tableMetadataRepository.getAllTables(DatabaseContext.getCurrentDatabase());
+        return tableMetadataRepository.getAllTables();
+    }
+
+    @Transactional(readOnly = true)
+    public TableMetadata getById(Long id) {
+        return tableMetadataRepository.getTable(id);
     }
 
     private static String createUniqueTableName(String displayName) {

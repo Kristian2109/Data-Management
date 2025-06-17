@@ -35,12 +35,14 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
 
     @Override
     public TableMetadata getTable(Long tableId) {
-        return null;
+        return repositoryJpa.findById(tableId)
+            .map(TableMetadataMapper::toDomain)
+            .orElseThrow(() -> new EntityNotFoundException("Table with id " + tableId + " not found"));
     }
 
     @Override
-    public List<TableMetadata> getAllTables(String physicalDatabaseName) {
-        return repositoryJpa.findAllByPhysicalDatabaseName(physicalDatabaseName)
+    public List<TableMetadata> getAllTables() {
+        return repositoryJpa.findAll()
             .stream()
             .map(TableMetadataMapper::toDomain)
             .toList();

@@ -41,4 +41,9 @@ public class TableController {
     public ResponseEntity<List<TableMetadata>> getTables() {
         return ResponseEntity.ok(tableService.getTablesForDatabase());
     }
+
+    @GetMapping("/{tableId}")
+    public ResponseEntity<TableMetadata> get(@PathVariable Long tableId) {
+        return ResponseEntity.ok(tableService.getById(tableId));
+    }
 } 

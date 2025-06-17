@@ -10,7 +10,7 @@ public interface TableMetadataRepository {
     TableMetadata createTable(CreateTableMetadataDto tableDto);
     TableMetadata addColumn(Long tableId, CreateColumnMetadataDto columnDto);
     TableMetadata getTable(Long tableId);
-    List<TableMetadata> getAllTables(String databaseName);
+    List<TableMetadata> getAllTables();
     void deleteTable(Long tableId);
     void deleteColumn(Long tableId, Long columnId);
 }
