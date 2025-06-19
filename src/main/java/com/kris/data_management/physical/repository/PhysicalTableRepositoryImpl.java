@@ -1,20 +1,31 @@
 package com.kris.data_management.physical.repository;
 
+import com.kris.data_management.common.ColumnTypeMapper;
+import com.kris.data_management.common.CreateColumnDto;
+import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.logical.table.ColumnMetadata;
+import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.physical.dto.CreatePhysicalColumnDto;
 import com.kris.data_management.physical.dto.CreatePhysicalTableDto;
+import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
 import com.kris.data_management.physical.query.QueryResult;
+import com.kris.data_management.utils.StorageUtils;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
 public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
+    private static final String TABLE_PREFIX = "tb";
+    private static final String COLUMN_PREFIX = "col";
+    private static final Integer RANDOM_PART_SIZE = 5;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -23,27 +34,36 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     }
 
     @Override
-    public void createTable(CreatePhysicalTableDto dto) {
+    public CreatePhysicalTableResult createTable(CreateTableDto dto) {
+        Map<String, String> columns = new HashMap<>();
+
         validateCreateTable(dto);
-        String sql = buildCreateTableSql(dto);
+        String columnsSql = dto.columns().stream()
+                .map(col -> {
+                    String name = createUniqueColumnName(col.displayName());
+                    String type = ColumnTypeMapper.map(col.type()).getSqlType();
+                    columns.put(col.displayName(), name);
+                    return "`" + name + "` " + type;
+                })
+                .collect(Collectors.joining(", "));
+
+        String tableName = PhysicalTableRepositoryImpl.createUniqueTableName(dto.displayName());
+        String sql = "CREATE TABLE `" + tableName + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columnsSql + ")";
         jdbcTemplate.execute(sql);
-    }
 
-    private String buildCreateTableSql(CreatePhysicalTableDto createTableDto) {
-        String columns = createTableDto.columns().stream()
-            .map(col -> "`" + col.name() + "` " + col.type().getSqlType())
-            .collect(Collectors.joining(", "));
-
-        return "CREATE TABLE `" + createTableDto.name() + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columns + ")";
+        return new CreatePhysicalTableResult(tableName, columns);
     }
 
     @Override
-    public void addColumn(String tableName, CreatePhysicalColumnDto col) {
+    public String addColumn(String tableName, CreateColumnDto col) {
         validateCreateColumn(col);
+        String uniqueColumnName = createUniqueColumnName(col.displayName());
+        String columnType = ColumnTypeMapper.map(col.type()).getSqlType();
         String sql = "ALTER TABLE " + tableName + "\n" +
-            "ADD " + "`" + col.name() + "` " + col.type().getSqlType() + ";";
+                "ADD " + "`" + uniqueColumnName + "` " + columnType + ";";
 
         jdbcTemplate.execute(sql);
+        return uniqueColumnName;
     }
 
     @Override
@@ -65,16 +85,24 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         return name.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");
     }
 
-    private static void validateCreateTable(CreatePhysicalTableDto dto) {
-        if (isValidIdentifier(dto.name())) {
-            throw new InvalidSqlIdentifierException(dto.name());
+    private static void validateCreateTable(CreateTableDto dto) {
+        if (!isValidIdentifier(dto.displayName())) {
+            throw new InvalidSqlIdentifierException(dto.displayName());
         }
         dto.columns().forEach(PhysicalTableRepositoryImpl::validateCreateColumn);
     }
 
-    private static void validateCreateColumn(CreatePhysicalColumnDto dto) {
-        if (isValidIdentifier(dto.name())) {
-            throw new InvalidSqlIdentifierException(dto.name());
+    private static void validateCreateColumn(CreateColumnDto dto) {
+        if (!isValidIdentifier(dto.displayName())) {
+            throw new InvalidSqlIdentifierException(dto.displayName());
         }
+    }
+
+    private static String createUniqueColumnName(String displayName) {
+        return StorageUtils.createPhysicalName(COLUMN_PREFIX, displayName, RANDOM_PART_SIZE);
+    }
+
+    private static String createUniqueTableName(String displayName) {
+        return StorageUtils.createPhysicalName(TABLE_PREFIX, displayName, RANDOM_PART_SIZE);
     }
 }

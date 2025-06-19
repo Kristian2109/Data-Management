@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/tables")
@@ -35,7 +34,8 @@ public class TableController {
     }
 
     @PostMapping("/{tableId}/columns")
-    public ResponseEntity<ColumnMetadata> createColumn(@PathVariable Long tableId,  @RequestBody CreateColumnDto columnDto) {
+    public ResponseEntity<ColumnMetadata> createColumn(@PathVariable Long tableId,
+            @RequestBody CreateColumnDto columnDto) {
         ColumnMetadata result = tableService.createColumn(tableId, columnDto);
         return ResponseEntity.ok(result);
     }
@@ -64,4 +64,4 @@ public class TableController {
     public ResponseEntity<?> executeQuery(@PathVariable Long tableId, @RequestBody Query query) {
         return ResponseEntity.status(501).body("Not implemented");
     }
-} 
+}

@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=rootpassword"
+
+  mysql:
+    image: "mysql:8.0"
+    environment:
+      - "MYSQL_DATABASE=database_management"
+      - "MYSQL_ROOT_PASSWORD=rootpassword"
+      - "MYSQL_PASSWORD=password"
+      - "MYSQL_USER=user"

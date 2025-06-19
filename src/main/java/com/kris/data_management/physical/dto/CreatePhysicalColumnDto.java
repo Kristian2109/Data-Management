@@ -1,7 +1,8 @@
 package com.kris.data_management.physical.dto;
-import com.kris.data_management.common.DatabaseColumnType;
+
+import com.kris.data_management.common.ColumnDataType;
 
 public record CreatePhysicalColumnDto(
-    DatabaseColumnType type,
-    String name
-) { }
+        ColumnDataType type,
+        String name) {
+}

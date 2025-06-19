@@ -2,7 +2,6 @@ package com.kris.data_management.services;
 
 import com.kris.data_management.database.dto.CreateDatabaseDto;
 import com.kris.data_management.database.dto.DatabaseMetadata;
-import com.kris.data_management.database.entities.DatabaseMetadataEntity;
 import com.kris.data_management.database.repository.DatabaseMetadataRepository;
 import com.kris.data_management.utils.StorageUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,9 +19,8 @@ public class DatabaseService {
     private static final Integer RANDOM_PART_SIZE = 5;
 
     public DatabaseService(
-        DatabaseMetadataRepository databaseRepository,
-        @Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate
-    ) {
+            DatabaseMetadataRepository databaseRepository,
+            @Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate) {
         this.databaseRepository = databaseRepository;
         this.adminJdbcTemplate = adminJdbcTemplate;
     }
@@ -54,7 +52,8 @@ public class DatabaseService {
                 "physical_name VARCHAR(255) NOT NULL, " +
                 "type VARCHAR(255) NOT NULL, " +
                 "table_id BIGINT, " +
-                "CONSTRAINT fk_column_table FOREIGN KEY (table_id) REFERENCES `" + schemaName + "`.`table_metadata`(id) ON DELETE CASCADE" +
+                "CONSTRAINT fk_column_table FOREIGN KEY (table_id) REFERENCES `" + schemaName
+                + "`.`table_metadata`(id) ON DELETE CASCADE" +
                 ")");
 
         adminJdbcTemplate.execute("CREATE TABLE IF NOT EXISTS `" + schemaName + "`.`view_metadata` (" +
@@ -62,7 +61,8 @@ public class DatabaseService {
                 "table_id BIGINT NOT NULL, " +
                 "name VARCHAR(255) NOT NULL, " +
                 "query_content TEXT NOT NULL, " +
-                "CONSTRAINT fk_view_table FOREIGN KEY (table_id) REFERENCES `" + schemaName + "`.`table_metadata`(id) ON DELETE CASCADE" +
+                "CONSTRAINT fk_view_table FOREIGN KEY (table_id) REFERENCES `" + schemaName
+                + "`.`table_metadata`(id) ON DELETE CASCADE" +
                 ")");
     }
 
@@ -73,4 +73,4 @@ public class DatabaseService {
     public java.util.List<DatabaseMetadata> getAllDatabases() {
         return databaseRepository.getAll();
     }
-} 
+}
