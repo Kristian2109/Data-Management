@@ -3,6 +3,7 @@ package com.kris.data_management.physical.repository;
 import com.kris.data_management.common.ColumnTypeMapper;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.common.RecordColumnValue;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.physical.dto.CreatePhysicalColumnDto;
@@ -92,8 +93,20 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     }
 
     @Override
-    public void addRecords(String tableName, List<Map<String, String>> records) {
+    public void addRecords(String tableName, List<String> columnNames, List<List<String>> records) {
 
+        StringJoiner recordsSql = new StringJoiner(", ");
+        List<String> allValues = new ArrayList<>();
+        for (List<String> record: records) {
+            StringJoiner placeholders = new StringJoiner(", ");
+            record.forEach( v -> placeholders.add("?"));
+            allValues.addAll(record);
+            recordsSql.add("( "+ placeholders +" )");
+        }
+
+        String columnNamesSql = String.join(", ", columnNames);
+        String sql = "INSERT INTO " + tableName + " (" + columnNamesSql + ") VALUES " + recordsSql;
+        jdbcTemplate.update(sql, allValues.toArray());
     }
 
     @Override

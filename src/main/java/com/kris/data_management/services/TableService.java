@@ -85,6 +85,18 @@ public class TableService {
         physicalTableRepository.addRecord(table.getPhysicalName(), valuePerPhysicalColumn);
     }
 
+    @Transactional
+    public void addRecordsBatch(Long tableId, List<Long> columnIds, List<List<String>> records) {
+        TableMetadata table = tableMetadataRepository.getTable(tableId);
+
+        List<String> columnNames = table.getColumns().stream()
+            .filter(metadata -> columnIds.contains(metadata.getId()))
+            .map(ColumnMetadata::getPhysicalName)
+            .toList();
+
+        physicalTableRepository.addRecords(table.getPhysicalName(), columnNames, records);
+    }
+
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,
             String physicalColumn) {
         return new CreateColumnMetadataDto(c.displayName(), physicalColumn, c.type());

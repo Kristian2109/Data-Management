@@ -1,5 +1,6 @@
 package com.kris.data_management.controllers;
 
+import com.kris.data_management.common.AddRecordsBatchDto;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
@@ -58,8 +59,9 @@ public class TableController {
     }
 
     @PostMapping("/{tableId}/records/batch")
-    public ResponseEntity<?> addRecords(@PathVariable Long tableId, @RequestBody List<Object> records) {
-        return ResponseEntity.status(501).body("Not implemented");
+    public ResponseEntity<?> addRecords(@PathVariable Long tableId, @RequestBody AddRecordsBatchDto recordsBatch) {
+        tableService.addRecordsBatch(tableId, recordsBatch.columnIds(), recordsBatch.records());
+        return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/{tableId}/query")
