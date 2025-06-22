@@ -8,12 +8,16 @@ import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
+import com.kris.data_management.physical.exception.ResourceNotFoundException;
 import com.kris.data_management.physical.repository.PhysicalTableRepository;
 import com.kris.data_management.physical.repository.PhysicalTableRepositoryImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class TableService {
@@ -63,6 +67,22 @@ public class TableService {
     @Transactional(readOnly = true)
     public TableMetadata getById(Long id) {
         return tableMetadataRepository.getTable(id);
+    }
+
+    @Transactional
+    public void addRecord(Long tableId, Map<Long, String> valuePerColumn) {
+        TableMetadata table = tableMetadataRepository.getTable(tableId);
+        Map<String, String> valuePerPhysicalColumn = new HashMap<>();
+        for (Map.Entry<Long, String> entry: valuePerColumn.entrySet()) {
+            ColumnMetadata column = table.getColumns().stream()
+                .filter(c -> Objects.equals(c.getId(), entry.getKey()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", entry.getKey()));
+
+            valuePerPhysicalColumn.put(column.getPhysicalName(), entry.getValue());
+
+        }
+        physicalTableRepository.addRecord(table.getPhysicalName(), valuePerPhysicalColumn);
     }
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,

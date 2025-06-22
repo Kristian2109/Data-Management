@@ -16,9 +16,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Repository
@@ -35,14 +38,15 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     @Override
     public CreatePhysicalTableResult createTable(CreateTableDto dto) {
-        Map<String, String> columns = new HashMap<>();
+        Map<String, String> result = new HashMap<>();
+        result.put("id", "id");
 
         validateCreateTable(dto);
         String columnsSql = dto.columns().stream()
                 .map(col -> {
                     String name = createUniqueColumnName(col.displayName());
                     String type = ColumnTypeMapper.map(col.type()).getSqlType();
-                    columns.put(col.displayName(), name);
+                    result.put(col.displayName(), name);
                     return "`" + name + "` " + type;
                 })
                 .collect(Collectors.joining(", "));
@@ -51,11 +55,12 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         String sql = "CREATE TABLE `" + tableName + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columnsSql + ")";
         jdbcTemplate.execute(sql);
 
-        return new CreatePhysicalTableResult(tableName, columns);
+        return new CreatePhysicalTableResult(tableName, result);
     }
 
     @Override
     public String addColumn(String tableName, CreateColumnDto col) {
+        validateSqlTerm(tableName);
         validateCreateColumn(col);
         String uniqueColumnName = createUniqueColumnName(col.displayName());
         String columnType = ColumnTypeMapper.map(col.type()).getSqlType();
@@ -68,7 +73,22 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     @Override
     public void addRecord(String tableName, Map<String, String> valuePerColumn) {
+        validateSqlTerm(tableName);
 
+        StringJoiner columnNames = new StringJoiner(", ");
+        StringJoiner placeholders = new StringJoiner(", ");
+        List<String> values = new ArrayList<>();
+
+        for (Map.Entry<String, String> entry : valuePerColumn.entrySet()) {
+            String columnName  = entry.getKey();
+            validateSqlTerm(columnName);
+            columnNames.add(columnName);
+            placeholders.add("?");
+            values.add(entry.getValue());
+        }
+
+        String sql = "INSERT INTO " + tableName + " (" + columnNames + ") VALUES (" + placeholders + ")";
+        jdbcTemplate.update(sql, values.toArray());
     }
 
     @Override
@@ -86,15 +106,17 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     }
 
     private static void validateCreateTable(CreateTableDto dto) {
-        if (!isValidIdentifier(dto.displayName())) {
-            throw new InvalidSqlIdentifierException(dto.displayName());
-        }
+        validateSqlTerm(dto.displayName());
         dto.columns().forEach(PhysicalTableRepositoryImpl::validateCreateColumn);
     }
 
     private static void validateCreateColumn(CreateColumnDto dto) {
-        if (!isValidIdentifier(dto.displayName())) {
-            throw new InvalidSqlIdentifierException(dto.displayName());
+        validateSqlTerm(dto.displayName());
+    }
+
+    private static void validateSqlTerm(String term) {
+        if (!isValidIdentifier(term)) {
+            throw new InvalidSqlIdentifierException(term);
         }
     }
 

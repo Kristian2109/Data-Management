@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/tables")
@@ -51,8 +52,9 @@ public class TableController {
     }
 
     @PostMapping("/{tableId}/records")
-    public ResponseEntity<?> addRecord(@PathVariable Long tableId, @RequestBody CreateRecordDto dto) {
-        return ResponseEntity.status(501).body("Not implemented");
+    public ResponseEntity<?> addRecord(@PathVariable Long tableId, @RequestBody Map<Long, String> valuePerColumnId) {
+        tableService.addRecord(tableId, valuePerColumnId);
+        return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/{tableId}/records/batch")
