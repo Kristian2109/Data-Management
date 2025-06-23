@@ -1,5 +1,6 @@
 package com.kris.data_management.services;
 
+import com.kris.data_management.common.ColumnDataType;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.logical.query.Query;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class TableService {
@@ -36,9 +38,25 @@ public class TableService {
     @Transactional
     public TableMetadata createTable(CreateTableDto tableDto) {
         CreatePhysicalTableResult res = physicalTableRepository.createTable(tableDto);
-        List<CreateColumnMetadataDto> columns = tableDto.columns().stream()
-                .map((c) -> TableService.mapToColumnMetadata(c, res.columnsByDisplayName().get(c.displayName())))
-                .toList();
+        Map<String, ColumnDataType> dataTypeByDisplayName = tableDto.columns().stream()
+            .collect(Collectors.toMap(
+                CreateColumnDto::displayName,
+                CreateColumnDto::type,
+                (existing, replacement) -> existing
+            ));
+
+        List<CreateColumnMetadataDto> columns = res.columnsByDisplayName()
+            .entrySet()
+            .stream()
+            .map(c ->{
+                if (c.getValue().equals("id")) {
+                    return new CreateColumnMetadataDto("Id", "id", ColumnDataType.NUMBER);
+                }
+                ColumnDataType columnDataType = dataTypeByDisplayName.get(c.getKey());
+
+                return new CreateColumnMetadataDto(c.getKey(), c.getValue(), columnDataType);
+            })
+            .toList();
 
         CreateTableMetadataDto tableMetadataCreate = new CreateTableMetadataDto(tableDto.displayName(),
                 res.tableName(), columns);

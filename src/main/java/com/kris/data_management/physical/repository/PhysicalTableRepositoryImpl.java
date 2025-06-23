@@ -48,10 +48,10 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         Map<String, String> result = new HashMap<>();
         result.put("id", "id");
 
-        validateCreateTable(dto);
         String columnsSql = dto.columns().stream()
                 .map(col -> {
                     String name = createUniqueColumnName(col.displayName());
+                    validateSqlTerm(name);
                     String type = ColumnTypeMapper.map(col.type()).getSqlType();
                     result.put(col.displayName(), name);
                     return "`" + name + "` " + type;
@@ -59,6 +59,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
                 .collect(Collectors.joining(", "));
 
         String tableName = PhysicalTableRepositoryImpl.createUniqueTableName(dto.displayName());
+        validateSqlTerm(tableName);
         String sql = "CREATE TABLE `" + tableName + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columnsSql + ")";
         jdbcTemplate.execute(sql);
 
@@ -163,11 +164,6 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     private static boolean isValidIdentifier(String name) {
         return name.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");
-    }
-
-    private static void validateCreateTable(CreateTableDto dto) {
-        validateSqlTerm(dto.displayName());
-        dto.columns().forEach(PhysicalTableRepositoryImpl::validateCreateColumn);
     }
 
     private static void validateCreateColumn(CreateColumnDto dto) {
