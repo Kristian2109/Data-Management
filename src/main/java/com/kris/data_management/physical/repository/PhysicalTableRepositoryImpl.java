@@ -3,14 +3,20 @@ package com.kris.data_management.physical.repository;
 import com.kris.data_management.common.ColumnTypeMapper;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.common.FilterOperator;
 import com.kris.data_management.common.RecordColumnValue;
+import com.kris.data_management.logical.query.ColumnValue;
+import com.kris.data_management.logical.query.Record;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.physical.dto.CreatePhysicalColumnDto;
 import com.kris.data_management.physical.dto.CreatePhysicalTableDto;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
+import com.kris.data_management.physical.query.Filter;
+import com.kris.data_management.physical.query.OrderBy;
 import com.kris.data_management.physical.query.QueryResult;
+import com.kris.data_management.physical.query.Select;
 import com.kris.data_management.utils.StorageUtils;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -94,6 +100,8 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     @Override
     public void addRecords(String tableName, List<String> columnNames, List<List<String>> records) {
+        validateSqlTerm(tableName);
+        columnNames.forEach(PhysicalTableRepositoryImpl::validateSqlTerm);
 
         StringJoiner recordsSql = new StringJoiner(", ");
         List<String> allValues = new ArrayList<>();
@@ -111,7 +119,46 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     @Override
     public QueryResult executeQuery(PhysicalQuery query) {
-        return null;
+        StringJoiner selectPart = new StringJoiner(", ");
+
+        for (Select select: query.select()) {
+            selectPart.add(select.tableName() + "." + select.columnName());
+        }
+
+        StringJoiner filters = new StringJoiner(" AND ");
+        for (Filter filter: query.filters()) {
+            String columnIdentifier = filter.tableName() + "." + filter.columnName();
+            String filterOperator = toFilterMap(filter.operator());
+            filters.add(columnIdentifier + " " + filterOperator + " " + filter.value());
+        }
+
+        StringJoiner orders = new StringJoiner(", ");
+        for (OrderBy orderBy: query.orders()) {
+            String columnIdentifier = orderBy.tableName() + "." + orderBy.columnName();
+            orders.add(columnIdentifier + " " + orderBy.direction().toString());
+        }
+
+        long offset = query.pagination().pageNumber() * (query.pagination().pageSize() - 1);
+        String pagination = "LIMIT " + query.pagination().pageSize() + " OFFSET " + offset;
+
+        String sql = "SELECT " + selectPart +
+            " FROM " + query.tableName() +
+            " WHERE " + filters +
+            " ORDER BY " + orders +
+            " " + pagination;
+        List<Map<String, Object>> objects =  jdbcTemplate.queryForList(sql);
+
+        List<Record> records = objects.stream().map(
+            obj -> {
+                List<ColumnValue> values = obj.values()
+                    .stream()
+                    .map(v -> new ColumnValue(v.toString()))
+                    .toList();
+                return new Record(values);
+            }
+        ).toList();
+
+        return new QueryResult(100L, records);
     }
 
     private static boolean isValidIdentifier(String name) {
@@ -139,5 +186,14 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     private static String createUniqueTableName(String displayName) {
         return StorageUtils.createPhysicalName(TABLE_PREFIX, displayName, RANDOM_PART_SIZE);
+    }
+
+    private static String toFilterMap(FilterOperator operator) {
+        switch (operator) {
+            case LESS -> {return "<"; }
+            case GREATER -> {return ">";}
+            case NOT_EQUAL -> {return "!=";}
+            default -> {return "=";}
+        }
     }
 }

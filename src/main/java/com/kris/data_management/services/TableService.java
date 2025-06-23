@@ -2,6 +2,7 @@ package com.kris.data_management.services;
 
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.logical.query.Query;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
@@ -9,8 +10,11 @@ import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.exception.ResourceNotFoundException;
+import com.kris.data_management.physical.query.PhysicalQuery;
+import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.physical.repository.PhysicalTableRepository;
 import com.kris.data_management.physical.repository.PhysicalTableRepositoryImpl;
+import com.kris.data_management.utils.TableMetadataMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,6 +99,15 @@ public class TableService {
             .toList();
 
         physicalTableRepository.addRecords(table.getPhysicalName(), columnNames, records);
+    }
+
+    @Transactional(readOnly = true)
+    public QueryResult queryRecords(Long tableId, Query query) {
+        TableMetadata table = tableMetadataRepository.getTable(tableId);
+
+        PhysicalQuery physicalQuery = TableMetadataMapper.mapToPhysicalQuery(query, List.of(table));
+
+        return physicalTableRepository.executeQuery(physicalQuery);
     }
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,

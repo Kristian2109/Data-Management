@@ -9,5 +9,6 @@ public record Query(
     List<Filter> filters,
     List<OrderBy> orders,
     Pagination pagination,
-    List<Join> joins
+    List<Join> joins,
+    Long tableId
 ) { }

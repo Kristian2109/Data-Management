@@ -2,11 +2,11 @@ package com.kris.data_management.controllers;
 
 import com.kris.data_management.common.AddRecordsBatchDto;
 import com.kris.data_management.common.CreateColumnDto;
-import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.logical.query.Query;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.services.TableService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,7 +65,7 @@ public class TableController {
     }
 
     @PostMapping("/{tableId}/query")
-    public ResponseEntity<?> executeQuery(@PathVariable Long tableId, @RequestBody Query query) {
-        return ResponseEntity.status(501).body("Not implemented");
+    public ResponseEntity<QueryResult> executeQuery(@PathVariable Long tableId, @RequestBody Query query) {
+        return ResponseEntity.ok(tableService.queryRecords(tableId, query));
     }
 }
