@@ -1,12 +1,13 @@
 package com.kris.data_management.logical.table;
 
+import com.kris.data_management.physical.exception.ResourceNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class TableMetadata {
     private final Long id;
-
     private String displayName;
     private final String physicalName;
     private final String physicalDatabaseName;
@@ -88,5 +89,12 @@ public class TableMetadata {
 
     public String getPhysicalDatabaseName() {
         return physicalDatabaseName;
+    }
+
+    public ColumnMetadata getColumnById(Long id) {
+        return columns.stream()
+            .filter(c -> c.getId().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", id));
     }
 }

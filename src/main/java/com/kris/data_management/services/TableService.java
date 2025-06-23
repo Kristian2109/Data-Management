@@ -111,9 +111,8 @@ public class TableService {
     public void addRecordsBatch(Long tableId, List<Long> columnIds, List<List<String>> records) {
         TableMetadata table = tableMetadataRepository.getTable(tableId);
 
-        List<String> columnNames = table.getColumns().stream()
-            .filter(metadata -> columnIds.contains(metadata.getId()))
-            .map(ColumnMetadata::getPhysicalName)
+        List<String> columnNames = columnIds.stream()
+            .map(id -> table.getColumnById(id).getPhysicalName())
             .toList();
 
         physicalTableRepository.addRecords(table.getPhysicalName(), columnNames, records);
@@ -121,9 +120,10 @@ public class TableService {
 
     @Transactional(readOnly = true)
     public QueryResult queryRecords(Long tableId, Query query) {
-        TableMetadata table = tableMetadataRepository.getTable(tableId);
+        List<TableMetadata> tables = tableMetadataRepository.getAllTables();
 
-        PhysicalQuery physicalQuery = TableMetadataMapper.mapToPhysicalQuery(query, List.of(table));
+
+        PhysicalQuery physicalQuery = TableMetadataMapper.mapToPhysicalQuery(query, tables);
 
         return physicalTableRepository.executeQuery(physicalQuery);
     }

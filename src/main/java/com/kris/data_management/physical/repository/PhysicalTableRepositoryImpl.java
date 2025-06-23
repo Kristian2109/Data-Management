@@ -4,16 +4,12 @@ import com.kris.data_management.common.ColumnTypeMapper;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.common.FilterOperator;
-import com.kris.data_management.common.RecordColumnValue;
 import com.kris.data_management.logical.query.ColumnValue;
 import com.kris.data_management.logical.query.Record;
-import com.kris.data_management.logical.table.ColumnMetadata;
-import com.kris.data_management.logical.table.CreateColumnMetadataDto;
-import com.kris.data_management.physical.dto.CreatePhysicalColumnDto;
-import com.kris.data_management.physical.dto.CreatePhysicalTableDto;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
 import com.kris.data_management.physical.query.Filter;
+import com.kris.data_management.physical.query.Join;
 import com.kris.data_management.physical.query.OrderBy;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.physical.query.Select;
@@ -142,11 +138,27 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         long offset = query.pagination().pageNumber() * (query.pagination().pageSize() - 1);
         String pagination = "LIMIT " + query.pagination().pageSize() + " OFFSET " + offset;
 
+        StringBuilder joinsSql = new StringBuilder();
+        for (Join join: query.joins()) {
+            //noinspection StringConcatenationInsideStringBufferAppend
+            joinsSql
+                .append("LEFT JOIN ")
+                .append(join.leftTableName())
+                .append(" ON ")
+                .append(join.leftTableName() + "." + join.leftColumnName())
+                .append(" = ")
+                .append(join.rightTableName() + "." + join.rightColumnName())
+                .append(" ");
+
+        }
+
         String sql = "SELECT " + selectPart +
             " FROM " + query.tableName() +
+            " " + joinsSql +
             " WHERE " + filters +
             " ORDER BY " + orders +
             " " + pagination;
+
         List<Map<String, Object>> objects =  jdbcTemplate.queryForList(sql);
 
         List<Record> records = objects.stream().map(

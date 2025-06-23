@@ -16,7 +16,9 @@ import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;
+import com.kris.data_management.physical.exception.ResourceNotFoundException;
 import com.kris.data_management.physical.query.Filter;
+import com.kris.data_management.physical.query.Join;
 import com.kris.data_management.physical.query.OrderBy;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.Select;
@@ -85,10 +87,13 @@ public class TableMetadataMapper {
             List<TableMetadata> tables) {
 
         Function<Long, TableMetadata> getTable =
-            id -> tables.stream().filter(t -> t.getId().equals(id)).findFirst().orElseThrow();
+            id -> tables.stream().filter(t -> t.getId().equals(id)).findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", id));
 
         BiFunction<Long, Long, ColumnMetadata> getColumn =
-            (tableId, columnId) -> getTable.apply(tableId).getColumns().stream().filter(c -> c.getId().equals(columnId)).findFirst().orElseThrow();
+            (tableId, columnId) -> getTable.apply(tableId).getColumns().stream().filter(c -> c.getId().equals(columnId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Column Id", columnId));
 
 
         List<Select> physicalSelects = query.select().stream().flatMap(sel -> {
@@ -110,7 +115,6 @@ public class TableMetadataMapper {
                 );
             }).toList();
 
-        // Map orders
         List<OrderBy> physicalOrders = query.orders().stream().map(o -> {
                 TableMetadata table = getTable.apply(o.tableId());
                 ColumnMetadata col = getColumn.apply(o.tableId(), o.columnId());
@@ -121,29 +125,26 @@ public class TableMetadataMapper {
                 );
             }).toList();
 
-        // Map joins
-//        List<com.kris.data_management.physical.query.Join> physicalJoins = query.joins() == null ? List.of() :
-//            query.joins().stream().map(j -> {
-//                TableMetadata leftTable = getTable.apply(j.firstTableId());
-//                TableMetadata rightTable = getTable.apply(j.secondTableId());
-//                ColumnMetadata leftCol = getColumn.apply(j.firstTableId(), j.firstTableColumnId());
-//                ColumnMetadata rightCol = getColumn.apply(j.secondTableId(), j.secondTableColumnId());
-//                return new com.kris.data_management.physical.query.Join(
-//                    leftTable.getPhysicalName(),
-//                    leftCol.getPhysicalName(),
-//                    rightTable.getPhysicalName(),
-//                    rightCol.getPhysicalName()
-//                );
-//            }).toList();
-//
-//        String mainTableName = physicalSelects.isEmpty() ? null : physicalSelects.get(0).tableName();
+        List<Join> physicalJoins = query.joins().stream().map(j -> {
+                TableMetadata leftTable = getTable.apply(j.firstTableId());
+                TableMetadata rightTable = getTable.apply(j.secondTableId());
+                ColumnMetadata leftCol = getColumn.apply(j.firstTableId(), j.firstTableColumnId());
+                ColumnMetadata rightCol = getColumn.apply(j.secondTableId(), j.secondTableColumnId());
+            System.out.println("Joins ");
+                return new Join(
+                    leftTable.getPhysicalName(),
+                    leftCol.getPhysicalName(),
+                    rightTable.getPhysicalName(),
+                    rightCol.getPhysicalName()
+                );
+            }).toList();
 
         return new PhysicalQuery(
             physicalSelects,
             physicalFilters,
             physicalOrders,
             query.pagination(),
-            new ArrayList<>(),
+            physicalJoins,
             getTable.apply(query.tableId()).getPhysicalName()
         );
     }
