@@ -3,9 +3,9 @@ package com.kris.data_management.controllers;
 import com.kris.data_management.common.AddRecordsBatchDto;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
-import com.kris.data_management.logical.query.Query;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.services.TableService;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ public class TableController {
     }
 
     @PostMapping("/{tableId}/columns")
-    public ResponseEntity<ColumnMetadata> createColumn(@PathVariable Long tableId,
+    public ResponseEntity<ColumnMetadata> createColumn(@PathVariable String tableId,
             @RequestBody CreateColumnDto columnDto) {
         ColumnMetadata result = tableService.createColumn(tableId, columnDto);
         return ResponseEntity.ok(result);
@@ -48,24 +48,24 @@ public class TableController {
     }
 
     @GetMapping("/{tableId}")
-    public ResponseEntity<TableMetadata> get(@PathVariable Long tableId) {
+    public ResponseEntity<TableMetadata> get(@PathVariable String tableId) {
         return ResponseEntity.ok(tableService.getById(tableId));
     }
 
     @PostMapping("/{tableId}/records")
-    public ResponseEntity<?> addRecord(@PathVariable Long tableId, @RequestBody Map<Long, String> valuePerColumnId) {
+    public ResponseEntity<?> addRecord(@PathVariable String tableId, @RequestBody Map<String, String> valuePerColumnId) {
         tableService.addRecord(tableId, valuePerColumnId);
         return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/{tableId}/records/batch")
-    public ResponseEntity<?> addRecords(@PathVariable Long tableId, @RequestBody AddRecordsBatchDto recordsBatch) {
+    public ResponseEntity<?> addRecords(@PathVariable String tableId, @RequestBody AddRecordsBatchDto recordsBatch) {
         tableService.addRecordsBatch(tableId, recordsBatch.columnIds(), recordsBatch.records());
         return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/{tableId}/query")
-    public ResponseEntity<QueryResult> executeQuery(@PathVariable Long tableId, @RequestBody Query query) {
+    public ResponseEntity<QueryResult> executeQuery(@PathVariable String tableId, @RequestBody PhysicalQuery query) {
         return ResponseEntity.ok(tableService.queryRecords(tableId, query));
     }
 }

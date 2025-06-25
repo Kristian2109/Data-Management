@@ -18,5 +18,5 @@ public interface PhysicalTableRepository {
 
     void addRecords(String tableName, List<String> columnNames, List<List<String>> records);
 
-    QueryResult executeQuery(PhysicalQuery query);
+    QueryResult executeQuery(String tableName, PhysicalQuery query);
 }

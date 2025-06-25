@@ -93,10 +93,10 @@ public class TableMetadata {
         return physicalDatabaseName;
     }
 
-    public ColumnMetadata getColumnById(Long id) {
+    public ColumnMetadata getColumnByName(String columnName) {
         return columns.stream()
-                .filter(c -> c.getId().equals(id))
+                .filter(c -> c.getPhysicalName().equals(columnName))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", columnName));
     }
 }

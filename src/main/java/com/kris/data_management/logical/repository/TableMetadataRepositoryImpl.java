@@ -35,10 +35,27 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
+    public TableMetadata addColumn(String tablePhysicalName, CreateColumnMetadataDto columnDto) {
+        TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tablePhysicalName)
+            .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
+
+        entity.getColumns().add(TableMetadataMapper.fromCreateDto(columnDto));
+        entity = repositoryJpa.save(entity);
+        return TableMetadataMapper.toDomain(entity);
+    }
+
+    @Override
     public TableMetadata getTable(Long tableId) {
         return repositoryJpa.findById(tableId)
                 .map(TableMetadataMapper::toDomain)
                 .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableId));
+    }
+
+    @Override
+    public TableMetadata getTable(String tablePhysicalName) {
+        return repositoryJpa.findByPhysicalName(tablePhysicalName)
+            .map(TableMetadataMapper::toDomain)
+            .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
     }
 
     @Override

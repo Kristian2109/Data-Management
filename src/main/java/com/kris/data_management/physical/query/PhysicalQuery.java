@@ -9,6 +9,5 @@ public record PhysicalQuery(
         List<Filter> filters,
         List<OrderBy> orders,
         Pagination pagination,
-        List<Join> joins,
-        String tableName
+        List<Join> joins
 ) { }

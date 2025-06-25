@@ -64,8 +64,10 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     @Override
     public String addColumn(String tableName, CreateColumnDto col) {
         validateSqlTerm(tableName);
-        validateCreateColumn(col);
+
         String uniqueColumnName = createUniqueColumnName(col.displayName());
+        validateSqlTerm(uniqueColumnName);
+
         String columnType = ColumnTypeMapper.map(col.type()).getSqlType();
         String sql = "ALTER TABLE " + tableName + "\n" +
                 "ADD " + "`" + uniqueColumnName + "` " + columnType + ";";
@@ -114,7 +116,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     }
 
     @Override
-    public QueryResult executeQuery(PhysicalQuery query) {
+    public QueryResult executeQuery(String tableName, PhysicalQuery query) {
         StringJoiner selectPart = new StringJoiner(", ");
 
         for (Select select : query.select()) {
@@ -142,7 +144,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
             // noinspection StringConcatenationInsideStringBufferAppend
             joinsSql
                     .append("LEFT JOIN ")
-                    .append(join.leftTableName())
+                    .append(join.rightTableName())
                     .append(" ON ")
                     .append(join.leftTableName() + "." + join.leftColumnName())
                     .append(" = ")
@@ -152,7 +154,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         }
 
         String sql = "SELECT " + selectPart +
-                " FROM " + query.tableName() +
+                " FROM " + tableName +
                 " " + joinsSql +
                 " WHERE " + filters +
                 " ORDER BY " + orders +
@@ -174,10 +176,6 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     private static boolean isValidIdentifier(String name) {
         return name.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");
-    }
-
-    private static void validateCreateColumn(CreateColumnDto dto) {
-        validateSqlTerm(dto.displayName());
     }
 
     private static void validateSqlTerm(String term) {
