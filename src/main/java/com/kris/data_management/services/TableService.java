@@ -3,6 +3,7 @@ package com.kris.data_management.services;
 import com.kris.data_management.common.ColumnDataType;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.common.ResourceNotFoundException;
 import com.kris.data_management.logical.query.Query;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;
@@ -10,7 +11,6 @@ import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
-import com.kris.data_management.physical.exception.ResourceNotFoundException;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.physical.repository.PhysicalTableRepository;
@@ -39,24 +39,23 @@ public class TableService {
     public TableMetadata createTable(CreateTableDto tableDto) {
         CreatePhysicalTableResult res = physicalTableRepository.createTable(tableDto);
         Map<String, ColumnDataType> dataTypeByDisplayName = tableDto.columns().stream()
-            .collect(Collectors.toMap(
-                CreateColumnDto::displayName,
-                CreateColumnDto::type,
-                (existing, replacement) -> existing
-            ));
+                .collect(Collectors.toMap(
+                        CreateColumnDto::displayName,
+                        CreateColumnDto::type,
+                        (existing, replacement) -> existing));
 
         List<CreateColumnMetadataDto> columns = res.columnsByDisplayName()
-            .entrySet()
-            .stream()
-            .map(c ->{
-                if (c.getValue().equals("id")) {
-                    return new CreateColumnMetadataDto("Id", "id", ColumnDataType.NUMBER);
-                }
-                ColumnDataType columnDataType = dataTypeByDisplayName.get(c.getKey());
+                .entrySet()
+                .stream()
+                .map(c -> {
+                    if (c.getValue().equals("id")) {
+                        return new CreateColumnMetadataDto("Id", "id", ColumnDataType.NUMBER);
+                    }
+                    ColumnDataType columnDataType = dataTypeByDisplayName.get(c.getKey());
 
-                return new CreateColumnMetadataDto(c.getKey(), c.getValue(), columnDataType);
-            })
-            .toList();
+                    return new CreateColumnMetadataDto(c.getKey(), c.getValue(), columnDataType);
+                })
+                .toList();
 
         CreateTableMetadataDto tableMetadataCreate = new CreateTableMetadataDto(tableDto.displayName(),
                 res.tableName(), columns);
@@ -95,11 +94,11 @@ public class TableService {
     public void addRecord(Long tableId, Map<Long, String> valuePerColumn) {
         TableMetadata table = tableMetadataRepository.getTable(tableId);
         Map<String, String> valuePerPhysicalColumn = new HashMap<>();
-        for (Map.Entry<Long, String> entry: valuePerColumn.entrySet()) {
+        for (Map.Entry<Long, String> entry : valuePerColumn.entrySet()) {
             ColumnMetadata column = table.getColumns().stream()
-                .filter(c -> Objects.equals(c.getId(), entry.getKey()))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", entry.getKey()));
+                    .filter(c -> Objects.equals(c.getId(), entry.getKey()))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", entry.getKey()));
 
             valuePerPhysicalColumn.put(column.getPhysicalName(), entry.getValue());
 
@@ -112,8 +111,8 @@ public class TableService {
         TableMetadata table = tableMetadataRepository.getTable(tableId);
 
         List<String> columnNames = columnIds.stream()
-            .map(id -> table.getColumnById(id).getPhysicalName())
-            .toList();
+                .map(id -> table.getColumnById(id).getPhysicalName())
+                .toList();
 
         physicalTableRepository.addRecords(table.getPhysicalName(), columnNames, records);
     }
@@ -121,7 +120,6 @@ public class TableService {
     @Transactional(readOnly = true)
     public QueryResult queryRecords(Long tableId, Query query) {
         List<TableMetadata> tables = tableMetadataRepository.getAllTables();
-
 
         PhysicalQuery physicalQuery = TableMetadataMapper.mapToPhysicalQuery(query, tables);
 

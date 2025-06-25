@@ -1,4 +1,4 @@
-package com.kris.data_management.physical.exception;
+package com.kris.data_management.common;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String resourceType, Object resourceName) {

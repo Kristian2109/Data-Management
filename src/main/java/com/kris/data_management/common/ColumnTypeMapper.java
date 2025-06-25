@@ -1,5 +1,7 @@
 package com.kris.data_management.common;
 
+import com.kris.data_management.physical.dto.DatabaseColumnType;
+
 public class ColumnTypeMapper {
     public static DatabaseColumnType map(ColumnDataType type) {
         return switch (type) {

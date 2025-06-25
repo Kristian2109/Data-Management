@@ -1,10 +1,10 @@
 package com.kris.data_management.logical.table;
 
-import com.kris.data_management.physical.exception.ResourceNotFoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.kris.data_management.common.ResourceNotFoundException;
 
 public class TableMetadata {
     private final Long id;
@@ -14,7 +14,8 @@ public class TableMetadata {
     private List<ColumnMetadata> columns = new ArrayList<>();
     private List<ViewMetadata> views = new ArrayList<>();
 
-    public TableMetadata(Long id, String displayName, String physicalName, String physicalDatabaseName, List<ColumnMetadata> columns, List<ViewMetadata> views) {
+    public TableMetadata(Long id, String displayName, String physicalName, String physicalDatabaseName,
+            List<ColumnMetadata> columns, List<ViewMetadata> views) {
         this.id = id;
         this.displayName = displayName;
         this.physicalName = physicalName;
@@ -44,8 +45,10 @@ public class TableMetadata {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         TableMetadata that = (TableMetadata) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(displayName, that.displayName) &&
@@ -78,7 +81,6 @@ public class TableMetadata {
         return physicalName;
     }
 
-
     public void addView(ViewMetadata view) {
         views.add(view);
     }
@@ -93,8 +95,8 @@ public class TableMetadata {
 
     public ColumnMetadata getColumnById(Long id) {
         return columns.stream()
-            .filter(c -> c.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", id));
+                .filter(c -> c.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", id));
     }
 }

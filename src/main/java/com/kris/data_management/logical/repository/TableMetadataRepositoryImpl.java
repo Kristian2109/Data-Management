@@ -1,14 +1,15 @@
 package com.kris.data_management.logical.repository;
 
+import com.kris.data_management.common.ResourceNotFoundException;
 import com.kris.data_management.logical.entities.TableMetadataEntity;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.utils.TableMetadataMapper;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     private final TableMetadataRepositoryJpa repositoryJpa;
@@ -26,7 +27,7 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     @Override
     public TableMetadata addColumn(Long tableId, CreateColumnMetadataDto columnMetadataDto) {
         TableMetadataEntity entity = repositoryJpa.findById(tableId)
-            .orElseThrow(() -> new EntityNotFoundException("Table with id " + tableId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableId));
 
         entity.getColumns().add(TableMetadataMapper.fromCreateDto(columnMetadataDto));
         entity = repositoryJpa.save(entity);
@@ -36,16 +37,16 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     @Override
     public TableMetadata getTable(Long tableId) {
         return repositoryJpa.findById(tableId)
-            .map(TableMetadataMapper::toDomain)
-            .orElseThrow(() -> new EntityNotFoundException("Table with id " + tableId + " not found"));
+                .map(TableMetadataMapper::toDomain)
+                .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableId));
     }
 
     @Override
     public List<TableMetadata> getAllTables() {
         return repositoryJpa.findAll()
-            .stream()
-            .map(TableMetadataMapper::toDomain)
-            .toList();
+                .stream()
+                .map(TableMetadataMapper::toDomain)
+                .toList();
     }
 
     @Override
