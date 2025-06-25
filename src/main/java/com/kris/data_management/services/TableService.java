@@ -2,6 +2,7 @@ package com.kris.data_management.services;
 
 import com.kris.data_management.common.ColumnDataType;
 import com.kris.data_management.common.CreateColumnDto;
+import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
@@ -83,20 +84,8 @@ public class TableService {
     }
 
     @Transactional
-    public void addRecord(String tableName, Map<String, String> valuePerColumn) {
-        TableMetadata table = tableMetadataRepository.getTable(tableName);
-        Map<String, String> valuePerPhysicalColumn = new HashMap<>();
-
-        for (Map.Entry<String, String> entry : valuePerColumn.entrySet()) {
-            ColumnMetadata column = table.getColumns().stream()
-                .filter(c -> Objects.equals(c.getPhysicalName(), entry.getKey()))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", entry.getKey()));
-
-            valuePerPhysicalColumn.put(column.getPhysicalName(), entry.getValue());
-
-        }
-        physicalTableRepository.addRecord(table.getPhysicalName(), valuePerPhysicalColumn);
+    public void addRecord(String tableName, CreateRecordDto recordDto) {
+        physicalTableRepository.addRecord(tableName, recordDto);
     }
 
     @Transactional

@@ -2,6 +2,7 @@ package com.kris.data_management.controllers;
 
 import com.kris.data_management.common.AddRecordsBatchDto;
 import com.kris.data_management.common.CreateColumnDto;
+import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.TableMetadata;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/tables")
@@ -53,8 +53,8 @@ public class TableController {
     }
 
     @PostMapping("/{tableId}/records")
-    public ResponseEntity<?> addRecord(@PathVariable String tableId, @RequestBody Map<String, String> valuePerColumnId) {
-        tableService.addRecord(tableId, valuePerColumnId);
+    public ResponseEntity<?> addRecord(@PathVariable String tableId, @RequestBody CreateRecordDto recordDto) {
+        tableService.addRecord(tableId, recordDto);
         return ResponseEntity.status(201).build();
     }
 

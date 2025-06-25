@@ -2,8 +2,10 @@ package com.kris.data_management.physical.repository;
 
 import com.kris.data_management.common.ColumnTypeMapper;
 import com.kris.data_management.common.CreateColumnDto;
+import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.common.FilterOperator;
+import com.kris.data_management.common.RecordColumnValue;
 import com.kris.data_management.physical.dto.ColumnValue;
 import com.kris.data_management.physical.dto.Record;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
@@ -77,19 +79,18 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     }
 
     @Override
-    public void addRecord(String tableName, Map<String, String> valuePerColumn) {
+    public void addRecord(String tableName, CreateRecordDto recordDto) {
         validateSqlTerm(tableName);
 
         StringJoiner columnNames = new StringJoiner(", ");
         StringJoiner placeholders = new StringJoiner(", ");
         List<String> values = new ArrayList<>();
 
-        for (Map.Entry<String, String> entry : valuePerColumn.entrySet()) {
-            String columnName = entry.getKey();
-            validateSqlTerm(columnName);
-            columnNames.add(columnName);
+        for (RecordColumnValue columnValue: recordDto.columnValues()) {
+            validateSqlTerm(columnValue.columnName());
+            columnNames.add(columnValue.columnName());
             placeholders.add("?");
-            values.add(entry.getValue());
+            values.add(columnValue.stringValue());
         }
 
         String sql = "INSERT INTO " + tableName + " (" + columnNames + ") VALUES (" + placeholders + ")";
