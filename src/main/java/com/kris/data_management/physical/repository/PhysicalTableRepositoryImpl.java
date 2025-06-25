@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +83,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         List<String> values = new ArrayList<>();
 
         for (Map.Entry<String, String> entry : valuePerColumn.entrySet()) {
-            String columnName  = entry.getKey();
+            String columnName = entry.getKey();
             validateSqlTerm(columnName);
             columnNames.add(columnName);
             placeholders.add("?");
@@ -102,11 +101,11 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
         StringJoiner recordsSql = new StringJoiner(", ");
         List<String> allValues = new ArrayList<>();
-        for (List<String> record: records) {
+        for (List<String> record : records) {
             StringJoiner placeholders = new StringJoiner(", ");
-            record.forEach( v -> placeholders.add("?"));
+            record.forEach(v -> placeholders.add("?"));
             allValues.addAll(record);
-            recordsSql.add("( "+ placeholders +" )");
+            recordsSql.add("( " + placeholders + " )");
         }
 
         String columnNamesSql = String.join(", ", columnNames);
@@ -118,19 +117,19 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     public QueryResult executeQuery(PhysicalQuery query) {
         StringJoiner selectPart = new StringJoiner(", ");
 
-        for (Select select: query.select()) {
+        for (Select select : query.select()) {
             selectPart.add(select.tableName() + "." + select.columnName());
         }
 
         StringJoiner filters = new StringJoiner(" AND ");
-        for (Filter filter: query.filters()) {
+        for (Filter filter : query.filters()) {
             String columnIdentifier = filter.tableName() + "." + filter.columnName();
             String filterOperator = toFilterMap(filter.operator());
             filters.add(columnIdentifier + " " + filterOperator + " " + filter.value());
         }
 
         StringJoiner orders = new StringJoiner(", ");
-        for (OrderBy orderBy: query.orders()) {
+        for (OrderBy orderBy : query.orders()) {
             String columnIdentifier = orderBy.tableName() + "." + orderBy.columnName();
             orders.add(columnIdentifier + " " + orderBy.direction().toString());
         }
@@ -139,37 +138,36 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         String pagination = "LIMIT " + query.pagination().pageSize() + " OFFSET " + offset;
 
         StringBuilder joinsSql = new StringBuilder();
-        for (Join join: query.joins()) {
-            //noinspection StringConcatenationInsideStringBufferAppend
+        for (Join join : query.joins()) {
+            // noinspection StringConcatenationInsideStringBufferAppend
             joinsSql
-                .append("LEFT JOIN ")
-                .append(join.leftTableName())
-                .append(" ON ")
-                .append(join.leftTableName() + "." + join.leftColumnName())
-                .append(" = ")
-                .append(join.rightTableName() + "." + join.rightColumnName())
-                .append(" ");
+                    .append("LEFT JOIN ")
+                    .append(join.leftTableName())
+                    .append(" ON ")
+                    .append(join.leftTableName() + "." + join.leftColumnName())
+                    .append(" = ")
+                    .append(join.rightTableName() + "." + join.rightColumnName())
+                    .append(" ");
 
         }
 
         String sql = "SELECT " + selectPart +
-            " FROM " + query.tableName() +
-            " " + joinsSql +
-            " WHERE " + filters +
-            " ORDER BY " + orders +
-            " " + pagination;
+                " FROM " + query.tableName() +
+                " " + joinsSql +
+                " WHERE " + filters +
+                " ORDER BY " + orders +
+                " " + pagination;
 
-        List<Map<String, Object>> objects =  jdbcTemplate.queryForList(sql);
+        List<Map<String, Object>> objects = jdbcTemplate.queryForList(sql);
 
         List<Record> records = objects.stream().map(
-            obj -> {
-                List<ColumnValue> values = obj.values()
-                    .stream()
-                    .map(v -> new ColumnValue(v.toString()))
-                    .toList();
-                return new Record(values);
-            }
-        ).toList();
+                obj -> {
+                    List<ColumnValue> values = obj.values()
+                            .stream()
+                            .map(v -> new ColumnValue(v.toString()))
+                            .toList();
+                    return new Record(values);
+                }).toList();
 
         return new QueryResult(100L, records);
     }
@@ -198,10 +196,18 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     private static String toFilterMap(FilterOperator operator) {
         switch (operator) {
-            case LESS -> {return "<"; }
-            case GREATER -> {return ">";}
-            case NOT_EQUAL -> {return "!=";}
-            default -> {return "=";}
+            case LESS -> {
+                return "<";
+            }
+            case GREATER -> {
+                return ">";
+            }
+            case NOT_EQUAL -> {
+                return "!=";
+            }
+            default -> {
+                return "=";
+            }
         }
     }
 }

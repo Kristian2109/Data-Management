@@ -1,4 +1,4 @@
-package com.kris.data_management.common;
+package com.kris.data_management.physical.dto;
 
 public enum DatabaseColumnType {
     INT("INT"),
@@ -6,6 +6,7 @@ public enum DatabaseColumnType {
     TEXT("TEXT"),
     BIGINT("BIGINT"),
     FOREIGN_KEY("BIGINT");
+
     private final String sqlType;
 
     DatabaseColumnType(String sqlType) {
@@ -15,4 +16,4 @@ public enum DatabaseColumnType {
     public String getSqlType() {
         return sqlType;
     }
-} 
+}
