@@ -1,6 +1,6 @@
 package com.kris.data_management.physical.query;
 
-import com.kris.data_management.logical.query.Record;
+import com.kris.data_management.physical.dto.Record;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.kris.data_management.logical.query;
+package com.kris.data_management.physical.dto;
 
 public class ColumnValue {
     private String stringValue;
