@@ -16,7 +16,6 @@ import java.util.List;
 @Entity
 @Table(name = "table_metadata")
 public class TableMetadataEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,8 +30,7 @@ public class TableMetadataEntity {
     @JoinColumn(name = "table_id")
     private List<ColumnMetadataEntity> columns = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "table_id")
+    @OneToMany(mappedBy = "table", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ViewMetadataEntity> views = new ArrayList<>();
 
     @Column(name = "physical_database_name", nullable = false)
@@ -83,6 +81,11 @@ public class TableMetadataEntity {
 
     public List<ViewMetadataEntity> getViews() {
         return views;
+    }
+
+    public void addView(ViewMetadataEntity e) {
+        this.views.add(e);
+        e.setTable(this);
     }
 
     public void setViews(List<ViewMetadataEntity> views) {

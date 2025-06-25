@@ -99,4 +99,11 @@ public class TableMetadata {
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Column Metadata", columnName));
     }
+
+    public ViewMetadata getViewByName(String viewName) {
+        return views.stream()
+            .filter(c -> c.name().equals(viewName))
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("View Metadata", viewName));
+    }
 }

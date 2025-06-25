@@ -4,12 +4,14 @@ import com.kris.data_management.common.ColumnDataType;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.common.CreateTableViewDto;
 import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.logical.table.ViewMetadata;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
@@ -96,6 +98,12 @@ public class TableService {
     @Transactional(readOnly = true)
     public QueryResult queryRecords(String tableName, PhysicalQuery query) {
         return physicalTableRepository.executeQuery(tableName, query);
+    }
+
+    @Transactional
+    public ViewMetadata createView(String tableName, CreateTableViewDto viewDto) {
+        TableMetadata table = tableMetadataRepository.addView(tableName, viewDto);
+        return table.getViewByName(viewDto.name());
     }
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,

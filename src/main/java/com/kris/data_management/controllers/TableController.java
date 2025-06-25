@@ -4,8 +4,10 @@ import com.kris.data_management.common.AddRecordsBatchDto;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.common.CreateTableViewDto;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.logical.table.ViewMetadata;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.services.TableService;
@@ -67,5 +69,10 @@ public class TableController {
     @PostMapping("/{tableId}/query")
     public ResponseEntity<QueryResult> executeQuery(@PathVariable String tableId, @RequestBody PhysicalQuery query) {
         return ResponseEntity.ok(tableService.queryRecords(tableId, query));
+    }
+
+    @PostMapping("/{tableName}/views")
+    public ResponseEntity<ViewMetadata> createView(@PathVariable String tableName, @RequestBody CreateTableViewDto viewDto) {
+        return ResponseEntity.status(201).body(tableService.createView(tableName, viewDto));
     }
 }

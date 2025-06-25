@@ -8,7 +8,6 @@ import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.query.PhysicalQuery;
 
 import java.util.List;
-import java.util.Map;
 
 public interface PhysicalTableRepository {
     CreatePhysicalTableResult createTable(CreateTableDto tableDto);

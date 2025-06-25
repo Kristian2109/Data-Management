@@ -1,7 +1,9 @@
 package com.kris.data_management.logical.repository;
 
+import com.kris.data_management.common.CreateTableViewDto;
 import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.entities.TableMetadataEntity;
+import com.kris.data_management.logical.entities.ViewMetadataEntity;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
@@ -25,16 +27,6 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
-    public TableMetadata addColumn(Long tableId, CreateColumnMetadataDto columnMetadataDto) {
-        TableMetadataEntity entity = repositoryJpa.findById(tableId)
-                .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableId));
-
-        entity.getColumns().add(TableMetadataMapper.fromCreateDto(columnMetadataDto));
-        entity = repositoryJpa.save(entity);
-        return TableMetadataMapper.toDomain(entity);
-    }
-
-    @Override
     public TableMetadata addColumn(String tablePhysicalName, CreateColumnMetadataDto columnDto) {
         TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tablePhysicalName)
             .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
@@ -42,13 +34,6 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
         entity.getColumns().add(TableMetadataMapper.fromCreateDto(columnDto));
         entity = repositoryJpa.save(entity);
         return TableMetadataMapper.toDomain(entity);
-    }
-
-    @Override
-    public TableMetadata getTable(Long tableId) {
-        return repositoryJpa.findById(tableId)
-                .map(TableMetadataMapper::toDomain)
-                .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableId));
     }
 
     @Override
@@ -64,6 +49,23 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
                 .stream()
                 .map(TableMetadataMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public TableMetadata save(TableMetadata table) {
+        TableMetadataEntity saved = repositoryJpa.save(TableMetadataMapper.fromDomain(table));
+        return TableMetadataMapper.toDomain(saved);
+    }
+
+    @Override
+    public TableMetadata addView(String tablePhysicalName, CreateTableViewDto viewDto) {
+        TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tablePhysicalName)
+            .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
+
+        ViewMetadataEntity viewMetadata = TableMetadataMapper.fromCreateDto(viewDto);
+        entity.addView(viewMetadata);
+        entity = repositoryJpa.save(entity);
+        return TableMetadataMapper.toDomain(entity);
     }
 
     @Override

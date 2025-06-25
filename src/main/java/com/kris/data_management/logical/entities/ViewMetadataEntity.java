@@ -10,22 +10,37 @@ public class ViewMetadataEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "table_id", nullable = false)
-    private TableMetadataEntity table;
-
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "query_content", nullable = false)
+    @Column(name = "query_content", nullable = false, columnDefinition = "json")
     private String query;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "table_id", nullable = false)
+    private TableMetadataEntity table;
+
+    public TableMetadataEntity getTable() {
+        return table;
+    }
+
+    public void setTable(TableMetadataEntity table) {
+        this.table = table;
+    }
+
     public ViewMetadataEntity() {}
 
-    public ViewMetadataEntity(Long id, TableMetadataEntity table, String query) {
+    public ViewMetadataEntity(Long id, String name, String query, TableMetadataEntity table) {
         this.id = id;
-        this.table = table;
+        this.name = name;
         this.query = query;
+        this.table = table;
+    }
+
+    public ViewMetadataEntity(Long id, String name, String query) {
+        this.id = id;
+        this.query = query;
+        this.name = name;
     }
 
     public Long getId() {
@@ -34,14 +49,6 @@ public class ViewMetadataEntity {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public TableMetadataEntity getTable() {
-        return table;
-    }
-
-    public void setTable(TableMetadataEntity table) {
-        this.table = table;
     }
 
     public String getQuery() {
@@ -58,5 +65,14 @@ public class ViewMetadataEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "ViewMetadataEntity{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", query='" + query + '\'' +
+            '}';
     }
 }
