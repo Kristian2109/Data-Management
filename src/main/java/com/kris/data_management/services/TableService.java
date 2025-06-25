@@ -3,7 +3,7 @@ package com.kris.data_management.services;
 import com.kris.data_management.common.ColumnDataType;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateTableDto;
-import com.kris.data_management.common.ResourceNotFoundException;
+import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.query.Query;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;

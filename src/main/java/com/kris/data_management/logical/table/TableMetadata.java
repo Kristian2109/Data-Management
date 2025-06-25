@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.kris.data_management.common.ResourceNotFoundException;
+import com.kris.data_management.common.exception.ResourceNotFoundException;
 
 public class TableMetadata {
     private final Long id;
