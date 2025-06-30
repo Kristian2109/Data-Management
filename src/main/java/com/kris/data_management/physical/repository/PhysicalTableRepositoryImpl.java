@@ -1,12 +1,8 @@
 package com.kris.data_management.physical.repository;
 
-import com.kris.data_management.common.ColumnTypeMapper;
-import com.kris.data_management.common.CreateColumnDto;
-import com.kris.data_management.common.CreateRecordDto;
-import com.kris.data_management.common.CreateTableDto;
-import com.kris.data_management.common.FilterOperator;
-import com.kris.data_management.common.RecordColumnValue;
+import com.kris.data_management.common.*;
 import com.kris.data_management.physical.dto.ColumnValue;
+import com.kris.data_management.physical.dto.DatabaseColumnType;
 import com.kris.data_management.physical.dto.Record;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
@@ -70,11 +66,32 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         String uniqueColumnName = createUniqueColumnName(col.displayName());
         validateSqlTerm(uniqueColumnName);
 
-        String columnType = ColumnTypeMapper.map(col.type()).getSqlType();
-        String sql = "ALTER TABLE " + tableName + "\n" +
-                "ADD " + "`" + uniqueColumnName + "` " + columnType + ";";
+        DatabaseColumnType columnType = ColumnTypeMapper.map(col.type());
 
-        jdbcTemplate.execute(sql);
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder
+                .append("ALTER TABLE ")
+                .append(tableName)
+                .append(" ADD COLUMN ")
+                .append(uniqueColumnName)
+                .append(" ")
+                .append(columnType.getSqlType());
+
+        if (columnType.equals(DatabaseColumnType.FOREIGN_KEY)) {
+            ParentIdentifier parent = col.parent()
+                    .orElseThrow(() -> new IllegalArgumentException("parent table is required"));
+
+            queryBuilder
+                    .append(", ADD FOREIGN KEY (")
+                    .append(uniqueColumnName)
+                    .append(") REFERENCES ")
+                    .append(parent.table())
+                    .append("(")
+                    .append(parent.column())
+                    .append(")");
+        }
+
+        jdbcTemplate.execute(queryBuilder.toString());
         return uniqueColumnName;
     }
 
@@ -86,7 +103,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         StringJoiner placeholders = new StringJoiner(", ");
         List<String> values = new ArrayList<>();
 
-        for (RecordColumnValue columnValue: recordDto.columnValues()) {
+        for (RecordColumnValue columnValue : recordDto.columnValues()) {
             validateSqlTerm(columnValue.columnName());
             columnNames.add(columnValue.columnName());
             placeholders.add("?");
@@ -154,14 +171,21 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
         }
 
-        String sql = "SELECT " + selectPart +
-                " FROM " + tableName +
-                " " + joinsSql +
-                " WHERE " + filters +
-                " ORDER BY " + orders +
-                " " + pagination;
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder.append("SELECT ")
+                .append(selectPart)
+                .append(" FROM ")
+                .append(tableName)
+                .append(" ")
+                .append(joinsSql)
+                .append(query.filters().isEmpty() ? "" : "WHERE ")
+                .append(filters)
+                .append(query.orders().isEmpty() ? "" : "ORDER BY ")
+                .append(orders)
+                .append(" ")
+                .append(pagination);
 
-        List<Map<String, Object>> objects = jdbcTemplate.queryForList(sql);
+        List<Map<String, Object>> objects = jdbcTemplate.queryForList(sqlBuilder.toString());
 
         List<Record> records = objects.stream().map(
                 obj -> {

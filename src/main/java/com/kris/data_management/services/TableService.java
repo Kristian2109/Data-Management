@@ -5,7 +5,6 @@ import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateRecordDto;
 import com.kris.data_management.common.CreateTableDto;
 import com.kris.data_management.common.CreateTableViewDto;
-import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
@@ -20,10 +19,9 @@ import com.kris.data_management.physical.repository.PhysicalTableRepositoryImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,10 +37,10 @@ public class TableService {
     @Transactional
     public TableMetadata createTable(CreateTableDto tableDto) {
         CreatePhysicalTableResult res = physicalTableRepository.createTable(tableDto);
-        Map<String, ColumnDataType> dataTypeByDisplayName = tableDto.columns().stream()
+        Map<String, CreateColumnDto> dataTypeByDisplayName = tableDto.columns().stream()
                 .collect(Collectors.toMap(
                         CreateColumnDto::displayName,
-                        CreateColumnDto::type,
+                        (c) -> c,
                         (existing, replacement) -> existing));
 
         List<CreateColumnMetadataDto> columns = res.columnsByDisplayName()
@@ -50,11 +48,11 @@ public class TableService {
                 .stream()
                 .map(c -> {
                     if (c.getValue().equals("id")) {
-                        return new CreateColumnMetadataDto("Id", "id", ColumnDataType.NUMBER);
+                        return new CreateColumnMetadataDto("Id", "id", ColumnDataType.NUMBER, Optional.empty());
                     }
-                    ColumnDataType columnDataType = dataTypeByDisplayName.get(c.getKey());
 
-                    return new CreateColumnMetadataDto(c.getKey(), c.getValue(), columnDataType);
+                    CreateColumnDto column = dataTypeByDisplayName.get(c.getKey());
+                    return mapToColumnMetadata(column, c.getValue());
                 })
                 .toList();
 
@@ -108,6 +106,6 @@ public class TableService {
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,
             String physicalColumn) {
-        return new CreateColumnMetadataDto(c.displayName(), physicalColumn, c.type());
+        return new CreateColumnMetadataDto(c.displayName(), physicalColumn, c.type(), c.parent());
     }
 }

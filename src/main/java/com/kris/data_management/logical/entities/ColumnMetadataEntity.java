@@ -29,13 +29,17 @@ public class ColumnMetadataEntity {
     @Column(name = "type", nullable = false)
     private ColumnDataType type;
 
+    @Column(name = "parent", columnDefinition = "json")
+    private String parent;
+
     public ColumnMetadataEntity() {}
 
-    public ColumnMetadataEntity(Long id, String displayName, String physicalName, ColumnDataType type) {
+    public ColumnMetadataEntity(Long id, String displayName, String physicalName, ColumnDataType type, String parent) {
         this.id = id;
         this.displayName = displayName;
         this.physicalName = physicalName;
         this.type = type;
+        this.parent = parent;
     }
 
     public Long getId() {
@@ -68,5 +72,13 @@ public class ColumnMetadataEntity {
 
     public void setType(ColumnDataType type) {
         this.type = type;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

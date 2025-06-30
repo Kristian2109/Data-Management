@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kris.data_management.common.CreateTableViewDto;
+import com.kris.data_management.common.ParentIdentifier;
 import com.kris.data_management.common.exception.InternalServerError;
 import com.kris.data_management.database.DatabaseContext;
 import com.kris.data_management.logical.entities.ColumnMetadataEntity;
@@ -38,6 +39,15 @@ public class TableMetadataMapper {
         }
 
         public static ColumnMetadata toDomain(ColumnMetadataEntity entity) {
+                if (!entity.getParent().isBlank()) {
+                        return new ColumnMetadata(
+                                entity.getId(),
+                                entity.getDisplayName(),
+                                entity.getPhysicalName(),
+                                entity.getType(),
+                                deserializeObject(entity.getParent(), ParentIdentifier.class)
+                        );
+                }
                 return new ColumnMetadata(
                                 entity.getId(),
                                 entity.getDisplayName(),
@@ -46,12 +56,8 @@ public class TableMetadataMapper {
         }
 
         public static ViewMetadata toDomain(ViewMetadataEntity entity) {
-                try {
-                        PhysicalQuery query = objectMapper.readValue(entity.getQuery(), PhysicalQuery.class);
-                        return new ViewMetadata(entity.getId(), entity.getName(), query);
-                } catch (JsonProcessingException e) {
-                        throw new InternalServerError("Cannot parse query from the database", e);
-                }
+                PhysicalQuery query = deserializeObject(entity.getQuery(), PhysicalQuery.class);
+                return new ViewMetadata(entity.getId(), entity.getName(), query);
         }
 
         public static TableMetadataEntity fromCreateDto(CreateTableMetadataDto dto) {
@@ -68,7 +74,11 @@ public class TableMetadataMapper {
         }
 
         public static ColumnMetadataEntity fromCreateDto(CreateColumnMetadataDto dto) {
-                return new ColumnMetadataEntity(null, dto.displayName(), dto.physicalName(), dto.type());
+                String foreignKey = "";
+                if (dto.parent().isPresent()) {
+                        foreignKey = serializeObject(dto.parent().get());
+                }
+                return new ColumnMetadataEntity(null, dto.displayName(), dto.physicalName(), dto.type(), foreignKey);
         }
 
         public static TableMetadataEntity fromDomain(TableMetadata domain) {
@@ -89,29 +99,42 @@ public class TableMetadataMapper {
         }
 
         public static ColumnMetadataEntity fromDomain(ColumnMetadata domain) {
+                String parent = "";
+                if (domain.getParent().isPresent()) {
+                        parent = serializeObject(domain.getParent().get());
+                }
                 return new ColumnMetadataEntity(
-                                domain.getId(),
-                                domain.getDisplayName(),
-                                domain.getPhysicalName(),
-                                domain.getType()
+                        domain.getId(),
+                        domain.getDisplayName(),
+                        domain.getPhysicalName(),
+                        domain.getType(),
+                        parent
                 );
         }
 
         public static ViewMetadataEntity fromDomain(ViewMetadata domain) {
-                try {
-                        String queryJson = objectMapper.writeValueAsString(domain.query());
-                        return new ViewMetadataEntity(domain.id(), domain.name(), queryJson);
-                } catch (JsonProcessingException e) {
-                        throw new InternalServerError("Cannot serialize query to the database", e);
-                }
+                String queryJson = serializeObject(domain.query());
+                return new ViewMetadataEntity(domain.id(), domain.name(), queryJson);
         }
 
         public static ViewMetadataEntity fromCreateDto(CreateTableViewDto domain) {
+                String queryJson = serializeObject(domain.query());
+                return new ViewMetadataEntity(null, domain.name(), queryJson);
+        }
+
+        public static String serializeObject(Object object) {
                 try {
-                        String queryJson = objectMapper.writeValueAsString(domain.query());
-                        return new ViewMetadataEntity(null, domain.name(), queryJson);
+                        return objectMapper.writeValueAsString(object);
                 } catch (JsonProcessingException e) {
-                        throw new InternalServerError("Cannot serialize query to the database", e);
+                        throw new InternalServerError("Cannot serialize object", e);
+                }
+        }
+
+        public static <T> T deserializeObject(String str, Class<T> clazz) {
+                try {
+                        return objectMapper.readValue(str, clazz);
+                } catch (JsonProcessingException e) {
+                        throw new InternalServerError("Cannot deserialize object", e);
                 }
         }
 }

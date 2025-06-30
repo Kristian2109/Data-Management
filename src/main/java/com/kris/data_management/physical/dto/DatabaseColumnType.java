@@ -1,5 +1,8 @@
 package com.kris.data_management.physical.dto;
 
+import lombok.Getter;
+
+@Getter
 public enum DatabaseColumnType {
     INT("INT"),
     VARCHAR_255("VARCHAR(255)"),
@@ -11,9 +14,5 @@ public enum DatabaseColumnType {
 
     DatabaseColumnType(String sqlType) {
         this.sqlType = sqlType;
-    }
-
-    public String getSqlType() {
-        return sqlType;
     }
 }
