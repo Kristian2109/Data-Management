@@ -180,7 +180,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
                 .append(joinsSql)
                 .append(query.filters().isEmpty() ? "" : "WHERE ")
                 .append(filters)
-                .append(query.orders().isEmpty() ? "" : "ORDER BY ")
+                .append(query.orders().isEmpty() ? "" : " ORDER BY ")
                 .append(orders)
                 .append(" ")
                 .append(pagination);
