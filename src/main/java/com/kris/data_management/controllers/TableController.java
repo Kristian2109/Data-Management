@@ -2,6 +2,7 @@ package com.kris.data_management.controllers;
 
 import java.util.List;
 
+import com.kris.data_management.logical.table.BaseTableMetadata;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,7 @@ import com.kris.data_management.physical.dto.CreateRecordDto;
 import com.kris.data_management.physical.dto.CreateTableDto;
 import com.kris.data_management.physical.dto.CreateTableViewDto;
 import com.kris.data_management.logical.table.ColumnMetadata;
-import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.logical.table.FullTableMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
@@ -33,8 +34,8 @@ public class TableController {
     }
 
     @PostMapping
-    public ResponseEntity<TableMetadata> createTable(@RequestBody CreateTableDto tableDto) {
-        TableMetadata result = tableService.createTable(tableDto);
+    public ResponseEntity<FullTableMetadata> createTable(@RequestBody CreateTableDto tableDto) {
+        FullTableMetadata result = tableService.createTable(tableDto);
         return ResponseEntity.status(201).body(result);
     }
 
@@ -46,12 +47,12 @@ public class TableController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TableMetadata>> getTables() {
+    public ResponseEntity<List<BaseTableMetadata>> getTables() {
         return ResponseEntity.ok(tableService.getTablesForDatabase());
     }
 
     @GetMapping("/{tableId}")
-    public ResponseEntity<TableMetadata> get(@PathVariable String tableId) {
+    public ResponseEntity<FullTableMetadata> get(@PathVariable String tableId) {
         return ResponseEntity.ok(tableService.getById(tableId));
     }
 

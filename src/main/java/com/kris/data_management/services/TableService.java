@@ -1,5 +1,6 @@
 package com.kris.data_management.services;
 
+import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.physical.dto.ColumnDataType;
 import com.kris.data_management.physical.dto.CreateColumnDto;
 import com.kris.data_management.physical.dto.CreateRecordDto;
@@ -9,7 +10,7 @@ import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
-import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.logical.table.FullTableMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.query.PhysicalQuery;
@@ -35,7 +36,7 @@ public class TableService {
     }
 
     @Transactional
-    public TableMetadata createTable(CreateTableDto tableDto) {
+    public FullTableMetadata createTable(CreateTableDto tableDto) {
         CreatePhysicalTableResult res = physicalTableRepository.createTable(tableDto);
         Map<String, CreateColumnDto> dataTypeByDisplayName = tableDto.columns().stream()
                 .collect(Collectors.toMap(
@@ -64,22 +65,22 @@ public class TableService {
 
     @Transactional
     public ColumnMetadata createColumn(String physicalTableName, CreateColumnDto columnDto) {
-        TableMetadata table = tableMetadataRepository.getTable(physicalTableName);
+        FullTableMetadata table = tableMetadataRepository.getTable(physicalTableName);
         String physicalColumnName = physicalTableRepository.addColumn(table.getPhysicalName(), columnDto);
         CreateColumnMetadataDto columnMetadataDto = TableService.mapToColumnMetadata(columnDto, physicalColumnName);
 
-        TableMetadata updatedTable = tableMetadataRepository.addColumn(physicalTableName, columnMetadataDto);
+        FullTableMetadata updatedTable = tableMetadataRepository.addColumn(physicalTableName, columnMetadataDto);
 
         return updatedTable.getColumnByName(physicalColumnName);
     }
 
     @Transactional(readOnly = true)
-    public List<TableMetadata> getTablesForDatabase() {
+    public List<BaseTableMetadata> getTablesForDatabase() {
         return tableMetadataRepository.getAllTables();
     }
 
     @Transactional(readOnly = true)
-    public TableMetadata getById(String name) {
+    public FullTableMetadata getById(String name) {
         return tableMetadataRepository.getTable(name);
     }
 
@@ -100,7 +101,7 @@ public class TableService {
 
     @Transactional
     public ViewMetadata createView(String tableName, CreateTableViewDto viewDto) {
-        TableMetadata table = tableMetadataRepository.addView(tableName, viewDto);
+        FullTableMetadata table = tableMetadataRepository.addView(tableName, viewDto);
         return table.getViewByName(viewDto.name());
     }
 

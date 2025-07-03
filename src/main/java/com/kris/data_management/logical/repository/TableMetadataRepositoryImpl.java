@@ -1,12 +1,13 @@
 package com.kris.data_management.logical.repository;
 
+import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.physical.dto.CreateTableViewDto;
 import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.entities.TableMetadataEntity;
 import com.kris.data_management.logical.entities.ViewMetadataEntity;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
-import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.logical.table.FullTableMetadata;
 import com.kris.data_management.mappers.TableMetadataMapper;
 import org.springframework.stereotype.Repository;
 
@@ -21,13 +22,13 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
-    public TableMetadata createTable(CreateTableMetadataDto tableDto) {
+    public FullTableMetadata createTable(CreateTableMetadataDto tableDto) {
         TableMetadataEntity entity = repositoryJpa.save(TableMetadataMapper.fromCreateDto(tableDto));
         return TableMetadataMapper.toDomain(entity);
     }
 
     @Override
-    public TableMetadata addColumn(String tablePhysicalName, CreateColumnMetadataDto columnDto) {
+    public FullTableMetadata addColumn(String tablePhysicalName, CreateColumnMetadataDto columnDto) {
         TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tablePhysicalName)
             .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
 
@@ -37,28 +38,28 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
-    public TableMetadata getTable(String tablePhysicalName) {
+    public FullTableMetadata getTable(String tablePhysicalName) {
         return repositoryJpa.findByPhysicalName(tablePhysicalName)
             .map(TableMetadataMapper::toDomain)
             .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
     }
 
     @Override
-    public List<TableMetadata> getAllTables() {
-        return repositoryJpa.findAll()
+    public List<BaseTableMetadata> getAllTables() {
+        return repositoryJpa.findAllWithoutCollections()
                 .stream()
-                .map(TableMetadataMapper::toDomain)
+                .map(TableMetadataMapper::toDomainWithoutCollections)
                 .toList();
     }
 
     @Override
-    public TableMetadata save(TableMetadata table) {
+    public FullTableMetadata save(FullTableMetadata table) {
         TableMetadataEntity saved = repositoryJpa.save(TableMetadataMapper.fromDomain(table));
         return TableMetadataMapper.toDomain(saved);
     }
 
     @Override
-    public TableMetadata addView(String tablePhysicalName, CreateTableViewDto viewDto) {
+    public FullTableMetadata addView(String tablePhysicalName, CreateTableViewDto viewDto) {
         TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tablePhysicalName)
             .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
 

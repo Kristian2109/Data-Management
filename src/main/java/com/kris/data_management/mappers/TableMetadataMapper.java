@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.physical.dto.CreateTableViewDto;
 import com.kris.data_management.physical.dto.ParentIdentifier;
 import com.kris.data_management.common.exception.InternalServerError;
@@ -16,26 +17,35 @@ import com.kris.data_management.logical.entities.ViewMetadataEntity;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
-import com.kris.data_management.logical.table.TableMetadata;
+import com.kris.data_management.logical.table.FullTableMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;
 import com.kris.data_management.physical.query.PhysicalQuery;
 
 public class TableMetadataMapper {
         private static final ObjectMapper objectMapper = new ObjectMapper();
-        public static TableMetadata toDomain(TableMetadataEntity entity) {
+        public static FullTableMetadata toDomain(TableMetadataEntity entity) {
                 List<ColumnMetadata> columns = entity.getColumns().stream()
                                 .map(TableMetadataMapper::toDomain)
                                 .collect(Collectors.toList());
                 List<ViewMetadata> views = entity.getViews().stream()
                                 .map(TableMetadataMapper::toDomain)
                                 .collect(Collectors.toList());
-                return new TableMetadata(
+                return new FullTableMetadata(
                                 entity.getId(),
                                 entity.getDisplayName(),
                                 entity.getPhysicalName(),
                                 entity.getPhysicalDatabaseName(),
                                 columns,
                                 views);
+        }
+
+        public static BaseTableMetadata toDomainWithoutCollections(TableMetadataEntity entity) {
+                return new BaseTableMetadata(
+                                entity.getId(),
+                                entity.getDisplayName(),
+                                entity.getPhysicalName(),
+                                entity.getPhysicalDatabaseName()
+                );
         }
 
         public static ColumnMetadata toDomain(ColumnMetadataEntity entity) {
@@ -81,7 +91,7 @@ public class TableMetadataMapper {
                 return new ColumnMetadataEntity(null, dto.displayName(), dto.physicalName(), dto.type(), foreignKey);
         }
 
-        public static TableMetadataEntity fromDomain(TableMetadata domain) {
+        public static TableMetadataEntity fromDomain(FullTableMetadata domain) {
                 List<ColumnMetadataEntity> columns = domain.getColumns().stream()
                                 .map(TableMetadataMapper::fromDomain)
                                 .collect(Collectors.toList());
