@@ -7,10 +7,9 @@ import com.kris.data_management.physical.dto.Record;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
 import com.kris.data_management.physical.query.Filter;
-import com.kris.data_management.physical.query.Join;
+import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.utils.StorageUtils;
-import com.kris.data_management.physical.query.PhysicalQuery;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -133,6 +132,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     @Override
     public QueryResult executeQuery(String tableName, PhysicalQuery query) {
+        validateQuery(query);
         List<Object> queryParams = new ArrayList<>();
 
         String fromClause = "FROM " + tableName;
@@ -158,6 +158,30 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         List<Record> records = mapResultsToRecords(objects);
 
         return new QueryResult(totalRecords, records);
+    }
+
+    private void validateQuery(PhysicalQuery query) {
+        query.select().forEach(s -> {
+            validateSqlTerm(s.tableName());
+            validateSqlTerm(s.columnName());
+        });
+
+        query.filters().forEach(f -> {
+            validateSqlTerm(f.tableName());
+            validateSqlTerm(f.columnName());
+        });
+
+        query.orders().forEach(o -> {
+            validateSqlTerm(o.tableName());
+            validateSqlTerm(o.columnName());
+        });
+
+        query.joins().forEach(j -> {
+            validateSqlTerm(j.rightTableName());
+            validateSqlTerm(j.rightColumnName());
+            validateSqlTerm(j.leftTableName());
+            validateSqlTerm(j.leftColumnName());
+        });
     }
 
     private List<Record> mapResultsToRecords(List<Map<String, Object>> objects) {
@@ -192,8 +216,9 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         if (query.joins().isEmpty()) {
             return "";
         }
+
         StringBuilder joinsSql = new StringBuilder();
-        for (Join join : query.joins()) {
+        query.joins().forEach(join -> {
             joinsSql.append("LEFT JOIN ")
                     .append(join.rightTableName())
                     .append(" ON ")
@@ -201,7 +226,8 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
                     .append(" = ")
                     .append(join.rightTableName()).append(".").append(join.rightColumnName())
                     .append(" ");
-        }
+        });
+
         return joinsSql.toString();
     }
 
@@ -209,13 +235,15 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         if (query.filters().isEmpty()) {
             return "";
         }
+
         StringJoiner filters = new StringJoiner(" AND ");
-        for (Filter filter : query.filters()) {
+        query.filters().stream().forEach(filter -> {
             String columnIdentifier = filter.tableName() + "." + filter.columnName();
             String filterOperator = toFilterMap(filter.operator());
             filters.add(columnIdentifier + " " + filterOperator + " ?");
             params.add(filter.value());
-        }
+        });
+
         return "WHERE " + filters;
     }
 
