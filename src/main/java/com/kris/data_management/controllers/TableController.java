@@ -63,7 +63,7 @@ public class TableController {
 
     @PostMapping("/{tableId}/records/batch")
     public ResponseEntity<?> addRecords(@PathVariable String tableId, @RequestBody AddRecordsBatchDto recordsBatch) {
-        tableService.addRecordsBatch(tableId, recordsBatch.columnIds(), recordsBatch.records());
+        tableService.addRecordsBatch(tableId, recordsBatch.columnNames(), recordsBatch.records());
         return ResponseEntity.status(201).build();
     }
 

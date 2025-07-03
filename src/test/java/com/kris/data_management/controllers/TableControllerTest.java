@@ -5,6 +5,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -136,6 +137,52 @@ public class TableControllerTest extends BaseTest {
                 .post("/tables/{tableName}/records", tablePhysicalName)
             .then()
                 .statusCode(201);
+        }
+
+        @Test
+        @DisplayName("Should add multiple records in a single batch")
+        void shouldAddRecordsInBatch() {
+            // Arrange
+            List<String> columnNames = List.of(initialColumnPhysicalName);
+            List<List<String>> records = List.of(
+                List.of("Batch Value 1"),
+                List.of("Batch Value 2")
+            );
+            Map<String, Object> batchRequestBody = Map.of(
+                "columnNames", columnNames,
+                "records", records
+            );
+
+            given()
+                .header("X-Database-Name", dbPhysicalName)
+                .contentType(ContentType.JSON)
+                .body(batchRequestBody)
+            .when()
+                .post("/tables/{tableName}/records/batch", tablePhysicalName)
+            .then()
+                .statusCode(201);
+
+            Map<String, Object> select = Map.of("columnName", initialColumnPhysicalName, "tableName", tablePhysicalName);
+            Map<String, Object> pagination = Map.of("pageNumber", 0, "pageSize", 10);
+            Map<String, Object> queryBody = Map.of(
+                "select", List.of(select),
+                "filters", List.of(),
+                "orders", List.of(),
+                "pagination", pagination,
+                "joins", List.of()
+            );
+
+            given()
+                .header("X-Database-Name", dbPhysicalName)
+                .contentType(ContentType.JSON)
+                .body(queryBody)
+            .when()
+                .post("/tables/{tableName}/query", tablePhysicalName)
+            .then()
+                .statusCode(200)
+                .body("records", hasSize(2))
+                .body("records.find { it.columnValues[0].stringValue == 'Batch Value 1' }", notNullValue())
+                .body("records.find { it.columnValues[0].stringValue == 'Batch Value 2' }", notNullValue());
         }
     }
 } 

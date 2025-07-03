@@ -19,11 +19,9 @@ public abstract class BaseTest {
     }
 
     protected String createTestDatabase(String displayName) {
-        // Create a DTO for the request body
         var createDbDto = new java.util.HashMap<String, String>();
         createDbDto.put("displayName", displayName);
 
-        // Make the request and extract the physical name
         return io.restassured.RestAssured.given()
             .contentType("application/json")
             .body(createDbDto)
