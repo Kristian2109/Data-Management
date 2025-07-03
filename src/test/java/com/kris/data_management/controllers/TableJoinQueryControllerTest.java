@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import com.kris.data_management.BaseTest;
@@ -114,6 +115,82 @@ public class TableJoinQueryControllerTest extends BaseTest {
             .body("records[2].columnValues[1].stringValue", is("Peter Jones"));
     }
     
+    @Nested
+    @DisplayName("Multi-Table Join Query Tests")
+    public class MultiJoinTests {
+        private String countriesTable;
+        private String customersTable;
+        private String ordersTable;
+        private String countryNameCol;
+        private String customerNameCol;
+        private String orderDescriptionCol;
+
+        @BeforeEach
+        public void setUp() {
+            // 1. Create Countries table and add a record
+            countriesTable = createTable("Countries", List.of(Map.of("displayName", "Name", "type", "text")));
+            countryNameCol = getPhysicalColumnNames(countriesTable).get("Name");
+            addRecord(countriesTable, Map.of(countryNameCol, "USA")); // ID 1
+
+            // 2. Create Customers table with a FK to Countries
+            customersTable = createTable("Customers", List.of(Map.of("displayName", "Name", "type", "text")));
+            addColumn(customersTable, "country_id", "foreign_key", countriesTable, "id");
+            customerNameCol = getPhysicalColumnNames(customersTable).get("Name");
+
+            // 3. Add a customer linked to the country
+            addRecord(customersTable, Map.of(
+                customerNameCol, "John Doe",
+                getPhysicalColumnNames(customersTable).get("country_id"), "1"
+            ));
+
+            // 4. Create Orders table with a FK to Customers
+            ordersTable = createTable("Orders", List.of(Map.of("displayName", "Description", "type", "text")));
+            addColumn(ordersTable, "customer_id", "foreign_key", customersTable, "id");
+            orderDescriptionCol = getPhysicalColumnNames(ordersTable).get("Description");
+
+            // 5. Add an order linked to the customer
+            addRecord(ordersTable, Map.of(
+                orderDescriptionCol, "New Desk Order",
+                getPhysicalColumnNames(ordersTable).get("customer_id"), "1"
+            ));
+        }
+
+        @Test
+        @DisplayName("Should join Orders -> Customers -> Countries")
+        void shouldJoinThreeTables() {
+            // Arrange
+            List<Map<String, Object>> selects = List.of(
+                Map.of("tableName", ordersTable, "columnName", orderDescriptionCol),
+                Map.of("tableName", customersTable, "columnName", customerNameCol),
+                Map.of("tableName", countriesTable, "columnName", countryNameCol)
+            );
+
+            List<Map<String, Object>> joins = List.of(
+                Map.of("leftTableName", ordersTable, "leftColumnName", getPhysicalColumnNames(ordersTable).get("customer_id"), "rightTableName", customersTable, "rightColumnName", "id"),
+                Map.of("leftTableName", customersTable, "leftColumnName", getPhysicalColumnNames(customersTable).get("country_id"), "rightTableName", countriesTable, "rightColumnName", "id")
+            );
+
+            Map<String, Object> queryBody = Map.of(
+                "select", selects, "filters", List.of(), "orders", List.of(),
+                "pagination", Map.of("pageNumber", 0, "pageSize", 10), "joins", joins
+            );
+
+            // Act & Assert
+            given()
+                .header("X-Database-Name", dbPhysicalName)
+                .contentType(ContentType.JSON)
+                .body(queryBody)
+            .when()
+                .post("/tables/{tableName}/query", ordersTable)
+            .then()
+                .statusCode(200)
+                .body("records", hasSize(1))
+                .body("records[0].columnValues[0].stringValue", is("New Desk Order"))
+                .body("records[0].columnValues[1].stringValue", is("John Doe"))
+                .body("records[0].columnValues[2].stringValue", is("USA"));
+        }
+    }
+
     // Helper methods to reduce boilerplate
     private String createTable(String displayName, List<Map<String, Object>> columns) {
         Map<String, Object> tableBody = Map.of("displayName", displayName, "columns", columns);
