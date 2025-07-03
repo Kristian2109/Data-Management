@@ -2,7 +2,7 @@ package com.kris.data_management.database.repository;
 
 import com.kris.data_management.database.dto.DatabaseMetadata;
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
-import com.kris.data_management.utils.DatabaseMetadataMapper;
+import com.kris.data_management.mappers.DatabaseMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

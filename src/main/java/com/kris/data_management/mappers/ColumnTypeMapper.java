@@ -1,5 +1,6 @@
-package com.kris.data_management.common;
+package com.kris.data_management.mappers;
 
+import com.kris.data_management.physical.dto.ColumnDataType;
 import com.kris.data_management.physical.dto.DatabaseColumnType;
 
 public class ColumnTypeMapper {

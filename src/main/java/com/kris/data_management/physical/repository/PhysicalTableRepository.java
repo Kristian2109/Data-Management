@@ -1,8 +1,8 @@
 package com.kris.data_management.physical.repository;
 
-import com.kris.data_management.common.CreateColumnDto;
-import com.kris.data_management.common.CreateRecordDto;
-import com.kris.data_management.common.CreateTableDto;
+import com.kris.data_management.physical.dto.CreateColumnDto;
+import com.kris.data_management.physical.dto.CreateRecordDto;
+import com.kris.data_management.physical.dto.CreateTableDto;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.query.PhysicalQuery;

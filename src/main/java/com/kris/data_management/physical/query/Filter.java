@@ -1,6 +1,6 @@
 package com.kris.data_management.physical.query;
 
-import com.kris.data_management.common.FilterOperator;
+import com.kris.data_management.physical.dto.FilterOperator;
 
 public record Filter(
     String columnName,

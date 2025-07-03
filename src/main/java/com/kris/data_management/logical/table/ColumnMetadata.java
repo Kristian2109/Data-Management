@@ -1,7 +1,7 @@
 package com.kris.data_management.logical.table;
 
-import com.kris.data_management.common.ColumnDataType;
-import com.kris.data_management.common.ParentIdentifier;
+import com.kris.data_management.physical.dto.ColumnDataType;
+import com.kris.data_management.physical.dto.ParentIdentifier;
 
 import java.util.Optional;
 

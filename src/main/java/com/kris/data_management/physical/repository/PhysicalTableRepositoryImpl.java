@@ -1,14 +1,20 @@
 package com.kris.data_management.physical.repository;
 
-import com.kris.data_management.common.*;
 import com.kris.data_management.physical.dto.ColumnValue;
+import com.kris.data_management.physical.dto.CreateColumnDto;
+import com.kris.data_management.physical.dto.CreateRecordDto;
+import com.kris.data_management.physical.dto.CreateTableDto;
 import com.kris.data_management.physical.dto.DatabaseColumnType;
+import com.kris.data_management.physical.dto.FilterOperator;
+import com.kris.data_management.physical.dto.Pagination;
+import com.kris.data_management.physical.dto.ParentIdentifier;
 import com.kris.data_management.physical.dto.Record;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
+import com.kris.data_management.physical.dto.RecordColumnValue;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
-import com.kris.data_management.physical.query.Filter;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
+import com.kris.data_management.mappers.ColumnTypeMapper;
 import com.kris.data_management.utils.StorageUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;

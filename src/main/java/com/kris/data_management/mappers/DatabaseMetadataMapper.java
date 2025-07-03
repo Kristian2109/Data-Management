@@ -1,4 +1,4 @@
-package com.kris.data_management.utils;
+package com.kris.data_management.mappers;
 
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
 import com.kris.data_management.database.dto.DatabaseMetadata;

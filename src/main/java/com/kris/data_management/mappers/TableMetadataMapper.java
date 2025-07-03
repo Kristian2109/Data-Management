@@ -1,4 +1,4 @@
-package com.kris.data_management.utils;
+package com.kris.data_management.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kris.data_management.common.CreateTableViewDto;
-import com.kris.data_management.common.ParentIdentifier;
+import com.kris.data_management.physical.dto.CreateTableViewDto;
+import com.kris.data_management.physical.dto.ParentIdentifier;
 import com.kris.data_management.common.exception.InternalServerError;
 import com.kris.data_management.database.DatabaseContext;
 import com.kris.data_management.logical.entities.ColumnMetadataEntity;

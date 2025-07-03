@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kris.data_management.common.AddRecordsBatchDto;
-import com.kris.data_management.common.CreateColumnDto;
-import com.kris.data_management.common.CreateRecordDto;
-import com.kris.data_management.common.CreateTableDto;
-import com.kris.data_management.common.CreateTableViewDto;
+import com.kris.data_management.physical.dto.AddRecordsBatchDto;
+import com.kris.data_management.physical.dto.CreateColumnDto;
+import com.kris.data_management.physical.dto.CreateRecordDto;
+import com.kris.data_management.physical.dto.CreateTableDto;
+import com.kris.data_management.physical.dto.CreateTableViewDto;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.TableMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;

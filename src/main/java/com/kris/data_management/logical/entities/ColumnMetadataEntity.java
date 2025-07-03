@@ -1,6 +1,6 @@
 package com.kris.data_management.logical.entities;
 
-import com.kris.data_management.common.ColumnDataType;
+import com.kris.data_management.physical.dto.ColumnDataType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

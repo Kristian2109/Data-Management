@@ -1,13 +1,13 @@
 package com.kris.data_management.logical.repository;
 
-import com.kris.data_management.common.CreateTableViewDto;
+import com.kris.data_management.physical.dto.CreateTableViewDto;
 import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.entities.TableMetadataEntity;
 import com.kris.data_management.logical.entities.ViewMetadataEntity;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.TableMetadata;
-import com.kris.data_management.utils.TableMetadataMapper;
+import com.kris.data_management.mappers.TableMetadataMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
