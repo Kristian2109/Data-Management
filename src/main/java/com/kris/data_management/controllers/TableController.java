@@ -1,5 +1,15 @@
 package com.kris.data_management.controllers;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kris.data_management.common.AddRecordsBatchDto;
 import com.kris.data_management.common.CreateColumnDto;
 import com.kris.data_management.common.CreateRecordDto;
@@ -11,15 +21,6 @@ import com.kris.data_management.logical.table.ViewMetadata;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
 import com.kris.data_management.services.TableService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tables")
@@ -34,14 +35,14 @@ public class TableController {
     @PostMapping
     public ResponseEntity<TableMetadata> createTable(@RequestBody CreateTableDto tableDto) {
         TableMetadata result = tableService.createTable(tableDto);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(201).body(result);
     }
 
     @PostMapping("/{tableId}/columns")
     public ResponseEntity<ColumnMetadata> createColumn(@PathVariable String tableId,
             @RequestBody CreateColumnDto columnDto) {
         ColumnMetadata result = tableService.createColumn(tableId, columnDto);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(201).body(result);
     }
 
     @GetMapping

@@ -2,14 +2,14 @@ package com.kris.data_management.logical.entities;
 
 import com.kris.data_management.common.ColumnDataType;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "column_metadata")
@@ -29,7 +29,7 @@ public class ColumnMetadataEntity {
     @Column(name = "type", nullable = false)
     private ColumnDataType type;
 
-    @Column(name = "parent", columnDefinition = "json")
+    @Column(name = "parent", columnDefinition = "TEXT")
     private String parent;
 
     public ColumnMetadataEntity() {}
