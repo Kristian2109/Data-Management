@@ -1,7 +1,7 @@
 package com.kris.data_management.logical.repository;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
-import com.kris.data_management.physical.dto.CreateTableViewDto;
+import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.logical.entities.TableMetadataEntity;
 import com.kris.data_management.logical.entities.ViewMetadataEntity;

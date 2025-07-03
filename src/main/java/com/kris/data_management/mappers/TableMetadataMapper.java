@@ -1,13 +1,15 @@
 package com.kris.data_management.mappers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kris.data_management.logical.table.BaseTableMetadata;
-import com.kris.data_management.physical.dto.CreateTableViewDto;
+import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.physical.dto.ParentIdentifier;
 import com.kris.data_management.common.exception.InternalServerError;
 import com.kris.data_management.database.DatabaseContext;
@@ -67,7 +69,13 @@ public class TableMetadataMapper {
 
         public static ViewMetadata toDomain(ViewMetadataEntity entity) {
                 PhysicalQuery query = deserializeObject(entity.getQuery(), PhysicalQuery.class);
-                return new ViewMetadata(entity.getId(), entity.getName(), query);
+                Map<String, String> physicalToDisplayColumnNames = new HashMap<>();
+
+                if (entity.getPhysicalToDisplayColumnNames() != null &&
+                    !entity.getPhysicalToDisplayColumnNames().isBlank()) {
+                        physicalToDisplayColumnNames = deserializeObject(entity.getPhysicalToDisplayColumnNames(), HashMap.class);
+                }
+                return new ViewMetadata(entity.getId(), entity.getName(), query, physicalToDisplayColumnNames);
         }
 
         public static TableMetadataEntity fromCreateDto(CreateTableMetadataDto dto) {
@@ -124,12 +132,14 @@ public class TableMetadataMapper {
 
         public static ViewMetadataEntity fromDomain(ViewMetadata domain) {
                 String queryJson = serializeObject(domain.query());
-                return new ViewMetadataEntity(domain.id(), domain.name(), queryJson);
+                String columnNamesMapping = serializeObject(domain.physicalToDisplayColumnNames());
+                return new ViewMetadataEntity(domain.id(), domain.name(), queryJson, columnNamesMapping);
         }
 
         public static ViewMetadataEntity fromCreateDto(CreateTableViewDto domain) {
                 String queryJson = serializeObject(domain.query());
-                return new ViewMetadataEntity(null, domain.name(), queryJson);
+                String columnNamesMapping = serializeObject(domain.physicalToDisplayColumnNames());
+                return new ViewMetadataEntity(null, domain.name(), queryJson, columnNamesMapping);
         }
 
         public static String serializeObject(Object object) {

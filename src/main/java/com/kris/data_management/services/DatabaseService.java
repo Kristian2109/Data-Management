@@ -61,6 +61,7 @@ public class DatabaseService {
                 "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
                 "table_id BIGINT NOT NULL, " +
                 "name VARCHAR(255) NOT NULL, " +
+                "physical_to_display_column_names TEXT, " +
                 "query_content TEXT NOT NULL, " +
                 "CONSTRAINT fk_view_table FOREIGN KEY (table_id) REFERENCES `" + schemaName
                 + "`.`table_metadata`(id) ON DELETE CASCADE" +

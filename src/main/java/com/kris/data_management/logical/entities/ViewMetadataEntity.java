@@ -24,6 +24,9 @@ public class ViewMetadataEntity {
     @Column(name = "query_content", nullable = false, columnDefinition = "TEXT")
     private String query;
 
+    @Column(name = "physical_to_display_column_names", columnDefinition = "TEXT")
+    private String physicalToDisplayColumnNames;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "table_id", nullable = false)
     private TableMetadataEntity table;
@@ -38,17 +41,20 @@ public class ViewMetadataEntity {
 
     public ViewMetadataEntity() {}
 
-    public ViewMetadataEntity(Long id, String name, String query, TableMetadataEntity table) {
+    public ViewMetadataEntity(Long id, String name, String query, String physicalToDisplayColumnNames,
+                              TableMetadataEntity table) {
         this.id = id;
         this.name = name;
         this.query = query;
+        this.physicalToDisplayColumnNames = physicalToDisplayColumnNames;
         this.table = table;
     }
 
-    public ViewMetadataEntity(Long id, String name, String query) {
+    public ViewMetadataEntity(Long id, String name, String query, String physicalToDisplayColumnNames) {
         this.id = id;
         this.query = query;
         this.name = name;
+        this.physicalToDisplayColumnNames = physicalToDisplayColumnNames;
     }
 
     public Long getId() {
@@ -74,6 +80,15 @@ public class ViewMetadataEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getPhysicalToDisplayColumnNames() {
+        return physicalToDisplayColumnNames;
+    }
+
+    public void setPhysicalToDisplayColumnNames(String physicalToDisplayColumnNames) {
+        this.physicalToDisplayColumnNames = physicalToDisplayColumnNames;
+    }
+
 
     @Override
     public String toString() {

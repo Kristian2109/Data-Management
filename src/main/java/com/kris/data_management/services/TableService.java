@@ -5,7 +5,7 @@ import com.kris.data_management.physical.dto.ColumnDataType;
 import com.kris.data_management.physical.dto.CreateColumnDto;
 import com.kris.data_management.physical.dto.CreateRecordDto;
 import com.kris.data_management.physical.dto.CreateTableDto;
-import com.kris.data_management.physical.dto.CreateTableViewDto;
+import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.logical.repository.TableMetadataRepository;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;

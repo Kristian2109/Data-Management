@@ -15,7 +15,7 @@ import com.kris.data_management.physical.dto.AddRecordsBatchDto;
 import com.kris.data_management.physical.dto.CreateColumnDto;
 import com.kris.data_management.physical.dto.CreateRecordDto;
 import com.kris.data_management.physical.dto.CreateTableDto;
-import com.kris.data_management.physical.dto.CreateTableViewDto;
+import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.logical.table.ColumnMetadata;
 import com.kris.data_management.logical.table.FullTableMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;
