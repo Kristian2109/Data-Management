@@ -103,7 +103,8 @@ public class TableQueryControllerTest extends BaseTest {
         .when().post("/tables/{tableName}/query", tablePhysicalName)
         .then()
             .statusCode(200)
-            .body("records", hasSize(4));
+            .body("records", hasSize(4))
+            .body("totalRecords", is(4));
     }
 
     @Test
@@ -128,7 +129,8 @@ public class TableQueryControllerTest extends BaseTest {
         .when().post("/tables/{tableName}/query", tablePhysicalName)
         .then()
             .statusCode(200)
-            .body("records", hasSize(2));
+            .body("records", hasSize(2))
+            .body("totalRecords", is(4));
     }
 
     @Test
@@ -139,7 +141,7 @@ public class TableQueryControllerTest extends BaseTest {
             Map.of("columnName", nameColumn, "tableName", tablePhysicalName)
         );
         List<Map<String, Object>> filters = List.of(
-            Map.of("columnName", categoryColumn, "tableName", tablePhysicalName, "operator", "EQUAL", "value", "'Electronics'")
+            Map.of("columnName", categoryColumn, "tableName", tablePhysicalName, "operator", "EQUAL", "value", "Electronics")
         );
         Map<String, Object> pagination = Map.of("pageNumber", 0, "pageSize", 10);
         Map<String, Object> queryBody = createQueryBody(selects, filters, List.of(), pagination);

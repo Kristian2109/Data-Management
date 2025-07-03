@@ -8,9 +8,7 @@ import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
 import com.kris.data_management.physical.query.Filter;
 import com.kris.data_management.physical.query.Join;
-import com.kris.data_management.physical.query.OrderBy;
 import com.kris.data_management.physical.query.QueryResult;
-import com.kris.data_management.physical.query.Select;
 import com.kris.data_management.utils.StorageUtils;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -135,68 +133,110 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
     @Override
     public QueryResult executeQuery(String tableName, PhysicalQuery query) {
+        List<Object> queryParams = new ArrayList<>();
+
+        String fromClause = "FROM " + tableName;
+        String joinClause = buildJoinClause(query);
+        String whereClause = buildWhereClause(query, queryParams);
+
+        long totalRecords = countTotalRecords(fromClause, joinClause, whereClause, queryParams);
+
+        String selectClause = buildSelectClause(query);
+        String orderByClause = buildOrderByClause(query);
+        String paginationClause = buildPaginationClause(query, queryParams);
+
+        String querySql = String.join(" ",
+                selectClause,
+                fromClause,
+                joinClause,
+                whereClause,
+                orderByClause,
+                paginationClause
+        ).trim().replaceAll(" +", " ");
+
+        List<Map<String, Object>> objects = jdbcTemplate.queryForList(querySql, queryParams.toArray());
+        List<Record> records = mapResultsToRecords(objects);
+
+        return new QueryResult(totalRecords, records);
+    }
+
+    private List<Record> mapResultsToRecords(List<Map<String, Object>> objects) {
+        return objects.stream().map(
+                obj -> {
+                    List<ColumnValue> values = obj.values()
+                            .stream()
+                            .map(v -> new ColumnValue(v != null ? v.toString() : null))
+                            .toList();
+                    return new Record(values);
+                }).toList();
+    }
+
+    private long countTotalRecords(String fromClause, String joinClause, String whereClause, List<Object> params) {
+        String countQuery = String.join(" ",
+                "SELECT COUNT(*)",
+                fromClause,
+                joinClause,
+                whereClause
+        ).trim().replaceAll(" +", " ");
+
+        return jdbcTemplate.queryForObject(countQuery, Long.class, params.toArray());
+    }
+
+    private String buildSelectClause(PhysicalQuery query) {
         StringJoiner selectPart = new StringJoiner(", ");
+        query.select().forEach(select -> selectPart.add(select.tableName() + "." + select.columnName()));
+        return "SELECT " + selectPart;
+    }
 
-        for (Select select : query.select()) {
-            selectPart.add(select.tableName() + "." + select.columnName());
+    private String buildJoinClause(PhysicalQuery query) {
+        if (query.joins().isEmpty()) {
+            return "";
         }
+        StringBuilder joinsSql = new StringBuilder();
+        for (Join join : query.joins()) {
+            joinsSql.append("LEFT JOIN ")
+                    .append(join.rightTableName())
+                    .append(" ON ")
+                    .append(join.leftTableName()).append(".").append(join.leftColumnName())
+                    .append(" = ")
+                    .append(join.rightTableName()).append(".").append(join.rightColumnName())
+                    .append(" ");
+        }
+        return joinsSql.toString();
+    }
 
+    private String buildWhereClause(PhysicalQuery query, List<Object> params) {
+        if (query.filters().isEmpty()) {
+            return "";
+        }
         StringJoiner filters = new StringJoiner(" AND ");
         for (Filter filter : query.filters()) {
             String columnIdentifier = filter.tableName() + "." + filter.columnName();
             String filterOperator = toFilterMap(filter.operator());
-            filters.add(columnIdentifier + " " + filterOperator + " " + filter.value());
+            filters.add(columnIdentifier + " " + filterOperator + " ?");
+            params.add(filter.value());
         }
+        return "WHERE " + filters;
+    }
 
+    private String buildOrderByClause(PhysicalQuery query) {
+        if (query.orders().isEmpty()) {
+            return "";
+        }
         StringJoiner orders = new StringJoiner(", ");
-        for (OrderBy orderBy : query.orders()) {
+        query.orders().forEach(orderBy -> {
             String columnIdentifier = orderBy.tableName() + "." + orderBy.columnName();
             orders.add(columnIdentifier + " " + orderBy.direction().toString());
-        }
+        });
+        return "ORDER BY " + orders;
+    }
 
-        long offset = query.pagination().pageNumber() * (query.pagination().pageSize() - 1);
-        String pagination = "LIMIT " + query.pagination().pageSize() + " OFFSET " + offset;
-
-        StringBuilder joinsSql = new StringBuilder();
-        for (Join join : query.joins()) {
-            // noinspection StringConcatenationInsideStringBufferAppend
-            joinsSql
-                    .append("LEFT JOIN ")
-                    .append(join.rightTableName())
-                    .append(" ON ")
-                    .append(join.leftTableName() + "." + join.leftColumnName())
-                    .append(" = ")
-                    .append(join.rightTableName() + "." + join.rightColumnName())
-                    .append(" ");
-
-        }
-
-        StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("SELECT ")
-                .append(selectPart)
-                .append(" FROM ")
-                .append(tableName)
-                .append(" ")
-                .append(joinsSql)
-                .append(query.filters().isEmpty() ? "" : "WHERE ")
-                .append(filters)
-                .append(query.orders().isEmpty() ? "" : " ORDER BY ")
-                .append(orders)
-                .append(" ")
-                .append(pagination);
-
-        List<Map<String, Object>> objects = jdbcTemplate.queryForList(sqlBuilder.toString());
-
-        List<Record> records = objects.stream().map(
-                obj -> {
-                    List<ColumnValue> values = obj.values()
-                            .stream()
-                            .map(v -> new ColumnValue(v.toString()))
-                            .toList();
-                    return new Record(values);
-                }).toList();
-
-        return new QueryResult(100L, records);
+    private String buildPaginationClause(PhysicalQuery query, List<Object> params) {
+        Pagination pagination = query.pagination();
+        long offset = (long) pagination.pageNumber() * pagination.pageSize();
+        params.add(pagination.pageSize());
+        params.add(offset);
+        return "LIMIT ? OFFSET ?";
     }
 
     private static boolean isValidIdentifier(String name) {
