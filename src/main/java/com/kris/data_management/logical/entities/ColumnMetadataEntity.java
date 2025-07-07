@@ -10,9 +10,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "column_metadata")
+@NoArgsConstructor
 public class ColumnMetadataEntity {
 
     @Id
@@ -32,8 +38,6 @@ public class ColumnMetadataEntity {
     @Column(name = "parent", columnDefinition = "TEXT")
     private String parent;
 
-    public ColumnMetadataEntity() {}
-
     public ColumnMetadataEntity(Long id, String displayName, String physicalName, ColumnDataType type, String parent) {
         this.id = id;
         this.displayName = displayName;
@@ -41,44 +45,13 @@ public class ColumnMetadataEntity {
         this.type = type;
         this.parent = parent;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getPhysicalName() {
-        return physicalName;
-    }
-
-    public void setPhysicalName(String physicalName) {
-        this.physicalName = physicalName;
-    }
-
-    public ColumnDataType getType() {
-        return type;
-    }
-
-    public void setType(ColumnDataType type) {
-        this.type = type;
-    }
-
-    public String getParent() {
-        return parent;
-    }
-
-    public void setParent(String parent) {
-        this.parent = parent;
+    @Override
+    public String toString() {
+        return "ColumnMetadataEntity{" +
+            "id=" + id +
+            ", displayName='" + displayName + '\'' +
+            ", physicalName='" + physicalName + '\'' +
+            ", type=" + type +
+            '}';
     }
 }
