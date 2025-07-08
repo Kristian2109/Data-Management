@@ -1,6 +1,7 @@
 package com.kris.data_management.services;
 
 import com.kris.data_management.logical.table.*;
+import com.kris.data_management.physical.dto.query.Pagination;
 import com.kris.data_management.physical.dto.table.ColumnDataType;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
 import com.kris.data_management.physical.dto.record.CreateRecordDto;
@@ -95,6 +96,9 @@ public class TableService {
 
     @Transactional
     public ViewMetadata createView(String tableName, CreateTableViewDto viewDto) {
+        PhysicalQuery queryForValidation = new PhysicalQuery(viewDto.query(), new Pagination(0L, 1L));
+        physicalTableRepository.executeQuery(tableName, queryForValidation);
+
         FullTableMetadata table = tableMetadataRepository.addView(tableName, viewDto);
         return table.getViewByName(viewDto.name());
     }

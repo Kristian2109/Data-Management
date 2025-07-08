@@ -8,4 +8,8 @@ public record PhysicalQuery(
         List<OrderBy> orders,
         Pagination pagination,
         List<Join> joins
-) { }
+) {
+    public PhysicalQuery(PhysicalQuery other, Pagination pagination) {
+        this(other.select, other.filters, other.orders, pagination, other.joins);
+    }
+}
