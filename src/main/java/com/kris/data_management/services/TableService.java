@@ -24,14 +24,11 @@ import java.util.stream.Collectors;
 public class TableService {
     private final PhysicalTableRepository physicalTableRepository;
     private final TableMetadataRepository tableMetadataRepository;
-    private final RelationshipRepository relationshipRepository;
 
     public TableService(PhysicalTableRepositoryImpl tableRepository,
-                        TableMetadataRepository tableMetadataRepository,
-                        RelationshipRepository relationshipRepository) {
+                        TableMetadataRepository tableMetadataRepository) {
         this.physicalTableRepository = tableRepository;
         this.tableMetadataRepository = tableMetadataRepository;
-        this.relationshipRepository = relationshipRepository;
     }
 
     @Transactional
@@ -71,19 +68,6 @@ public class TableService {
         FullTableMetadata updatedTable = tableMetadataRepository.addColumn(physicalTableName, columnMetadataDto);
 
         return updatedTable.getColumnByName(physicalColumnName);
-    }
-
-    @Transactional
-    public Relationship createRelationship(CreateRelationshipDto createRelationshipDto) {
-        FullTableMetadata parentTable = tableMetadataRepository.getTable(createRelationshipDto.parentTableName());
-        FullTableMetadata childTable = tableMetadataRepository.getTable(createRelationshipDto.childTableName());
-
-        this.physicalTableRepository.addForeignKeyConstraint(createRelationshipDto);
-
-        return relationshipRepository.create(
-                createRelationshipDto.name(), parentTable, childTable,
-                createRelationshipDto.parentColumnName(), createRelationshipDto.childColumnName()
-        );
     }
 
     @Transactional(readOnly = true)

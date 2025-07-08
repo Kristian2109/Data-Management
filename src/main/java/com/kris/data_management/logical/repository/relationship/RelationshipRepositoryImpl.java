@@ -10,6 +10,9 @@ import com.kris.data_management.mappers.RelationshipMapper;
 import com.kris.data_management.mappers.TableMetadataMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Repository
 public class RelationshipRepositoryImpl implements RelationshipRepository{
 
@@ -37,5 +40,12 @@ public class RelationshipRepositoryImpl implements RelationshipRepository{
 
         return RelationshipMapper.toDomain(relationship);
 
+    }
+
+    @Override
+    public List<Relationship> getAll() {
+        return relationshipRepository.findAll().stream()
+                .map(RelationshipMapper::toDomain)
+                .collect(Collectors.toList());
     }
 }
