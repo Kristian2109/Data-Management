@@ -1,6 +1,4 @@
-package com.kris.data_management.physical.dto;
-
-import com.kris.data_management.physical.dto.CreateColumnDto;
+package com.kris.data_management.physical.dto.table;
 
 import java.util.List;
 

@@ -1,8 +1,6 @@
-package com.kris.data_management.physical.query;
+package com.kris.data_management.physical.dto.query;
 
 import java.util.List;
-
-import com.kris.data_management.physical.dto.Pagination;
 
 public record PhysicalQuery(
         List<Select> select,

@@ -1,4 +1,4 @@
-package com.kris.data_management.physical.query;
+package com.kris.data_management.physical.dto.query;
 
 public record Join(
         String leftTableName,

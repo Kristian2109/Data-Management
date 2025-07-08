@@ -1,6 +1,6 @@
 package com.kris.data_management.logical.table;
 
-import com.kris.data_management.physical.dto.ColumnDataType;
+import com.kris.data_management.physical.dto.table.ColumnDataType;
 
 public record CreateColumnMetadataDto(
         String displayName,

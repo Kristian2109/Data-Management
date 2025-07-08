@@ -1,12 +1,12 @@
 package com.kris.data_management.physical.repository;
 
 import com.kris.data_management.logical.table.CreateRelationshipDto;
-import com.kris.data_management.physical.dto.CreateColumnDto;
-import com.kris.data_management.physical.dto.CreateRecordDto;
-import com.kris.data_management.physical.dto.CreateTableDto;
-import com.kris.data_management.physical.query.QueryResult;
-import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
-import com.kris.data_management.physical.query.PhysicalQuery;
+import com.kris.data_management.physical.dto.table.CreateColumnDto;
+import com.kris.data_management.physical.dto.record.CreateRecordDto;
+import com.kris.data_management.physical.dto.table.CreateTableDto;
+import com.kris.data_management.physical.dto.query.QueryResult;
+import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
+import com.kris.data_management.physical.dto.query.PhysicalQuery;
 
 import java.util.List;
 

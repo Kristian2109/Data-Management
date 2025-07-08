@@ -20,7 +20,7 @@ import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.FullTableMetadata;
 import com.kris.data_management.logical.table.ViewMetadata;
-import com.kris.data_management.physical.query.PhysicalQuery;
+import com.kris.data_management.physical.dto.query.PhysicalQuery;
 
 public class TableMetadataMapper {
         private static final ObjectMapper objectMapper = new ObjectMapper();

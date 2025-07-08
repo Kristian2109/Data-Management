@@ -1,4 +1,4 @@
-package com.kris.data_management.physical.dto;
+package com.kris.data_management.physical.dto.query;
 
 public enum FilterOperator {
     EQUAL,

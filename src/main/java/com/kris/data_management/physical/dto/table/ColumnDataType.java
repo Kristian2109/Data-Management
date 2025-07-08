@@ -1,4 +1,4 @@
-package com.kris.data_management.physical.dto;
+package com.kris.data_management.physical.dto.table;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

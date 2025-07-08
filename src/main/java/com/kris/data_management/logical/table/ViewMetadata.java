@@ -1,6 +1,6 @@
 package com.kris.data_management.logical.table;
 
-import com.kris.data_management.physical.query.PhysicalQuery;
+import com.kris.data_management.physical.dto.query.PhysicalQuery;
 
 import java.util.Map;
 

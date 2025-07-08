@@ -1,7 +1,7 @@
 package com.kris.data_management.mappers;
 
-import com.kris.data_management.physical.dto.ColumnDataType;
-import com.kris.data_management.physical.dto.DatabaseColumnType;
+import com.kris.data_management.physical.dto.table.ColumnDataType;
+import com.kris.data_management.physical.dto.table.DatabaseColumnType;
 
 public class ColumnTypeMapper {
     public static DatabaseColumnType map(ColumnDataType type) {
