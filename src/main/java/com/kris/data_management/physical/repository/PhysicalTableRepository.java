@@ -1,5 +1,6 @@
 package com.kris.data_management.physical.repository;
 
+import com.kris.data_management.logical.table.CreateRelationshipDto;
 import com.kris.data_management.physical.dto.CreateColumnDto;
 import com.kris.data_management.physical.dto.CreateRecordDto;
 import com.kris.data_management.physical.dto.CreateTableDto;
@@ -19,4 +20,6 @@ public interface PhysicalTableRepository {
     void addRecords(String tableName, List<String> columnNames, List<List<String>> records);
 
     QueryResult executeQuery(String tableName, PhysicalQuery query);
+
+    void addForeignKeyConstraint(CreateRelationshipDto createRelationshipDto);
 }

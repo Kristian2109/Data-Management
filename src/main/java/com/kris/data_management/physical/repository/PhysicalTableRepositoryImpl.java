@@ -1,5 +1,6 @@
 package com.kris.data_management.physical.repository;
 
+import com.kris.data_management.logical.table.CreateRelationshipDto;
 import com.kris.data_management.physical.dto.ColumnValue;
 import com.kris.data_management.physical.dto.CreateColumnDto;
 import com.kris.data_management.physical.dto.CreateRecordDto;
@@ -56,7 +57,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
         String tableName = PhysicalTableRepositoryImpl.createUniqueTableName(dto.displayName());
         validateSqlTerm(tableName);
-        String sql = "CREATE TABLE `" + tableName + "` (id BIGINT AUTO_INCREMENT PRIMARY KEY, " + columnsSql + ")";
+        String sql = "CREATE TABLE `" + tableName + "` (id INT AUTO_INCREMENT PRIMARY KEY, " + columnsSql + ")";
         jdbcTemplate.execute(sql);
 
         return new CreatePhysicalTableResult(tableName, result);
@@ -71,30 +72,15 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
 
         DatabaseColumnType columnType = ColumnTypeMapper.map(col.type());
 
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder
-                .append("ALTER TABLE ")
-                .append(tableName)
-                .append(" ADD COLUMN ")
-                .append(uniqueColumnName)
-                .append(" ")
-                .append(columnType.getSqlType());
+        String query = "ALTER TABLE " +
+                tableName +
+                " ADD COLUMN " +
+                uniqueColumnName +
+                " " +
+                columnType.getSqlType();
 
-        if (columnType.equals(DatabaseColumnType.FOREIGN_KEY)) {
-            ParentIdentifier parent = col.parent()
-                    .orElseThrow(() -> new IllegalArgumentException("parent table is required"));
 
-            queryBuilder
-                    .append(", ADD FOREIGN KEY (")
-                    .append(uniqueColumnName)
-                    .append(") REFERENCES ")
-                    .append(parent.table())
-                    .append("(")
-                    .append(parent.column())
-                    .append(")");
-        }
-
-        jdbcTemplate.execute(queryBuilder.toString());
+        jdbcTemplate.execute(query);
         return uniqueColumnName;
     }
 
@@ -164,6 +150,21 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         List<Record> records = mapResultsToRecords(objects);
 
         return new QueryResult(totalRecords, records);
+    }
+
+    @Override
+    public void addForeignKeyConstraint(CreateRelationshipDto rel) {
+        validateSqlTerm(rel.parentTableName());
+        validateSqlTerm(rel.parentColumnName());
+        validateSqlTerm(rel.childTableName());
+        validateSqlTerm(rel.childColumnName());
+
+        String query = "ALTER TABLE " + rel.childTableName() +
+                " ADD FOREIGN KEY (" +  rel.childColumnName() + ") " +
+                "REFERENCES " + rel.parentTableName() +
+                "(" + rel.parentColumnName() + ")";
+
+        jdbcTemplate.execute(query);
     }
 
     private void validateQuery(PhysicalQuery query) {
@@ -243,7 +244,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         }
 
         StringJoiner filters = new StringJoiner(" AND ");
-        query.filters().stream().forEach(filter -> {
+        query.filters().forEach(filter -> {
             String columnIdentifier = filter.tableName() + "." + filter.columnName();
             String filterOperator = toFilterMap(filter.operator());
             filters.add(columnIdentifier + " " + filterOperator + " ?");

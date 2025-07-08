@@ -78,12 +78,12 @@ public class TableService {
         FullTableMetadata parentTable = tableMetadataRepository.getTable(createRelationshipDto.parentTableName());
         FullTableMetadata childTable = tableMetadataRepository.getTable(createRelationshipDto.childTableName());
 
-        Relationship relationship = relationshipRepository.create(
+        this.physicalTableRepository.addForeignKeyConstraint(createRelationshipDto);
+
+        return relationshipRepository.create(
                 createRelationshipDto.name(), parentTable, childTable,
                 createRelationshipDto.parentColumnName(), createRelationshipDto.childColumnName()
         );
-
-        return relationship;
     }
 
     @Transactional(readOnly = true)
