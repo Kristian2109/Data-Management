@@ -1,4 +1,4 @@
-package com.kris.data_management.logical.repository;
+package com.kris.data_management.logical.repository.tableMetadata;
 
 import java.util.List;
 

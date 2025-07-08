@@ -82,13 +82,15 @@ public class TableMetadataMapper {
                 List<ColumnMetadataEntity> columns = dto.columns().stream()
                                 .map(TableMetadataMapper::fromCreateDto)
                                 .collect(Collectors.toList());
+
                 return new TableMetadataEntity(
                                 null,
                                 dto.displayName(),
                                 dto.physicalName(),
                                 DatabaseContext.getCurrentDatabase(),
                                 columns,
-                                new ArrayList<>());
+                                new ArrayList<>()
+                );
         }
 
         public static ColumnMetadataEntity fromCreateDto(CreateColumnMetadataDto dto) {

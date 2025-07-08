@@ -1,5 +1,6 @@
 package com.kris.data_management.logical.entities;
 
+import com.kris.data_management.common.exception.ResourceNotFoundException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,6 +52,17 @@ public class TableMetadataEntity {
         this.columns = columns;
         this.views = views;
         this.physicalDatabaseName = physicalDatabaseName;
+
+        columns.forEach(column -> {
+            column.setTable(this);
+        });
+    }
+
+    public TableMetadataEntity(Long id, String displayName, String physicalName, String physicalDatabaseName) {
+        this.id = id;
+        this.displayName = displayName;
+        this.physicalName = physicalName;
+        this.physicalDatabaseName = physicalDatabaseName;
     }
 
     public Long getId() {
@@ -85,5 +97,17 @@ public class TableMetadataEntity {
             ", displayName='" + displayName + '\'' +
             ", physicalName='" + physicalName + '\'' +
             '}';
+    }
+
+    public ColumnMetadataEntity getColumnByName(String columnName) {
+        return this.columns.stream()
+                .filter(c -> c.getPhysicalName().equals(columnName))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Column",  columnName));
+    }
+
+    public void addColumn(ColumnMetadataEntity column) {
+        this.columns.add(column);
+        column.setTable(this);
     }
 }

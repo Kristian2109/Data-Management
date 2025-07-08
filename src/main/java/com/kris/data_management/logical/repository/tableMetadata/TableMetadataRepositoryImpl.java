@@ -1,4 +1,4 @@
-package com.kris.data_management.logical.repository;
+package com.kris.data_management.logical.repository.tableMetadata;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.CreateTableViewDto;
@@ -32,7 +32,7 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
         TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tablePhysicalName)
             .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tablePhysicalName));
 
-        entity.getColumns().add(TableMetadataMapper.fromCreateDto(columnDto));
+        entity.addColumn(TableMetadataMapper.fromCreateDto(columnDto));
         entity = repositoryJpa.save(entity);
         return TableMetadataMapper.toDomain(entity);
     }

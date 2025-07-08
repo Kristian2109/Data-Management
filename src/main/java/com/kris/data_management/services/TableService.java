@@ -1,17 +1,12 @@
 package com.kris.data_management.services;
 
-import com.kris.data_management.logical.table.BaseTableMetadata;
+import com.kris.data_management.logical.repository.relationship.RelationshipRepository;
+import com.kris.data_management.logical.table.*;
 import com.kris.data_management.physical.dto.ColumnDataType;
 import com.kris.data_management.physical.dto.CreateColumnDto;
 import com.kris.data_management.physical.dto.CreateRecordDto;
 import com.kris.data_management.physical.dto.CreateTableDto;
-import com.kris.data_management.logical.table.CreateTableViewDto;
-import com.kris.data_management.logical.repository.TableMetadataRepository;
-import com.kris.data_management.logical.table.ColumnMetadata;
-import com.kris.data_management.logical.table.CreateColumnMetadataDto;
-import com.kris.data_management.logical.table.CreateTableMetadataDto;
-import com.kris.data_management.logical.table.FullTableMetadata;
-import com.kris.data_management.logical.table.ViewMetadata;
+import com.kris.data_management.logical.repository.tableMetadata.TableMetadataRepository;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.query.PhysicalQuery;
 import com.kris.data_management.physical.query.QueryResult;
@@ -29,10 +24,14 @@ import java.util.stream.Collectors;
 public class TableService {
     private final PhysicalTableRepository physicalTableRepository;
     private final TableMetadataRepository tableMetadataRepository;
+    private final RelationshipRepository relationshipRepository;
 
-    public TableService(PhysicalTableRepositoryImpl tableRepository, TableMetadataRepository tableMetadataRepository) {
+    public TableService(PhysicalTableRepositoryImpl tableRepository,
+                        TableMetadataRepository tableMetadataRepository,
+                        RelationshipRepository relationshipRepository) {
         this.physicalTableRepository = tableRepository;
         this.tableMetadataRepository = tableMetadataRepository;
+        this.relationshipRepository = relationshipRepository;
     }
 
     @Transactional
@@ -72,6 +71,19 @@ public class TableService {
         FullTableMetadata updatedTable = tableMetadataRepository.addColumn(physicalTableName, columnMetadataDto);
 
         return updatedTable.getColumnByName(physicalColumnName);
+    }
+
+    @Transactional
+    public Relationship createRelationship(CreateRelationshipDto createRelationshipDto) {
+        FullTableMetadata parentTable = tableMetadataRepository.getTable(createRelationshipDto.parentTableName());
+        FullTableMetadata childTable = tableMetadataRepository.getTable(createRelationshipDto.childTableName());
+
+        Relationship relationship = relationshipRepository.create(
+                createRelationshipDto.name(), parentTable, childTable,
+                createRelationshipDto.parentColumnName(), createRelationshipDto.childColumnName()
+        );
+
+        return relationship;
     }
 
     @Transactional(readOnly = true)

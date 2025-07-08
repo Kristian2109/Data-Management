@@ -66,6 +66,17 @@ public class DatabaseService {
                 "CONSTRAINT fk_view_table FOREIGN KEY (table_id) REFERENCES `" + schemaName
                 + "`.`table_metadata`(id) ON DELETE CASCADE" +
                 ")");
+
+        adminJdbcTemplate.execute(
+            "CREATE TABLE IF NOT EXISTS `" + schemaName + "`.`relationship_metadata` (" +
+                    "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
+                    "name VARCHAR(255) NOT NULL, " +
+                    "parent_column_id BIGINT NOT NULL, " +
+                    "child_column_id BIGINT NOT NULL, " +
+                    "CONSTRAINT fk_parent_column FOREIGN KEY (parent_column_id) REFERENCES `" + schemaName + "`.`column_metadata`(id), " +
+                    "CONSTRAINT fk_child_column FOREIGN KEY (child_column_id) REFERENCES `" + schemaName + "`.`column_metadata`(id)" +
+                    ")"
+        );
     }
 
     public DatabaseMetadata getDatabase(Long id) {
