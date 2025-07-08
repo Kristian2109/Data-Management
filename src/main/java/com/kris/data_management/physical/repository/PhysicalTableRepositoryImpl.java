@@ -8,7 +8,6 @@ import com.kris.data_management.physical.dto.CreateTableDto;
 import com.kris.data_management.physical.dto.DatabaseColumnType;
 import com.kris.data_management.physical.dto.FilterOperator;
 import com.kris.data_management.physical.dto.Pagination;
-import com.kris.data_management.physical.dto.ParentIdentifier;
 import com.kris.data_management.physical.dto.Record;
 import com.kris.data_management.physical.dto.CreatePhysicalTableResult;
 import com.kris.data_management.physical.dto.RecordColumnValue;

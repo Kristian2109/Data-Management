@@ -28,28 +28,15 @@ public class ColumnMetadataEntity {
     @Column(name = "type", nullable = false)
     private ColumnDataType type;
 
-    @Column(name = "parent", columnDefinition = "TEXT")
-    private String parent;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "table_id", nullable = false)
     private TableMetadataEntity table;
 
-    public ColumnMetadataEntity(Long id, String displayName, String physicalName, ColumnDataType type, String parent) {
+    public ColumnMetadataEntity(Long id, String displayName, String physicalName, ColumnDataType type) {
         this.id = id;
         this.displayName = displayName;
         this.physicalName = physicalName;
         this.type = type;
-        this.parent = parent;
-    }
-
-    public ColumnMetadataEntity(Long id, String displayName, String physicalName, ColumnDataType type, String parent, TableMetadataEntity table) {
-        this.id = id;
-        this.displayName = displayName;
-        this.physicalName = physicalName;
-        this.type = type;
-        this.parent = parent;
-        this.table = table;
     }
 
     @Override

@@ -51,7 +51,6 @@ public class DatabaseService {
                 "display_name VARCHAR(255) NOT NULL, " +
                 "physical_name VARCHAR(255) NOT NULL, " +
                 "type VARCHAR(255) NOT NULL, " +
-                "parent TEXT NOT NULL, " +
                 "table_id BIGINT, " +
                 "CONSTRAINT fk_column_table FOREIGN KEY (table_id) REFERENCES `" + schemaName
                 + "`.`table_metadata`(id) ON DELETE CASCADE" +

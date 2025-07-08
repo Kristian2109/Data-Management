@@ -5,7 +5,6 @@ import com.kris.data_management.logical.repository.tableMetadata.TableMetadataRe
 import com.kris.data_management.logical.table.CreateRelationshipDto;
 import com.kris.data_management.logical.table.FullTableMetadata;
 import com.kris.data_management.logical.table.Relationship;
-import com.kris.data_management.mappers.RelationshipMapper;
 import com.kris.data_management.physical.repository.PhysicalTableRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

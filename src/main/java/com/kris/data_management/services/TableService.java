@@ -45,7 +45,7 @@ public class TableService {
                 .stream()
                 .map(c -> {
                     if (c.getValue().equals("id")) {
-                        return new CreateColumnMetadataDto("Id", "id", ColumnDataType.NUMBER, Optional.empty());
+                        return new CreateColumnMetadataDto("Id", "id", ColumnDataType.NUMBER);
                     }
 
                     CreateColumnDto column = dataTypeByDisplayName.get(c.getKey());
@@ -103,6 +103,6 @@ public class TableService {
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,
             String physicalColumn) {
-        return new CreateColumnMetadataDto(c.displayName(), physicalColumn, c.type(), c.parent());
+        return new CreateColumnMetadataDto(c.displayName(), physicalColumn, c.type());
     }
 }

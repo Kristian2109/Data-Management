@@ -10,7 +10,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.CreateTableViewDto;
-import com.kris.data_management.physical.dto.ParentIdentifier;
 import com.kris.data_management.common.exception.InternalServerError;
 import com.kris.data_management.database.DatabaseContext;
 import com.kris.data_management.logical.entities.ColumnMetadataEntity;
@@ -51,15 +50,6 @@ public class TableMetadataMapper {
         }
 
         public static ColumnMetadata toDomain(ColumnMetadataEntity entity) {
-                if (!entity.getParent().isBlank()) {
-                        return new ColumnMetadata(
-                                entity.getId(),
-                                entity.getDisplayName(),
-                                entity.getPhysicalName(),
-                                entity.getType(),
-                                deserializeObject(entity.getParent(), ParentIdentifier.class)
-                        );
-                }
                 return new ColumnMetadata(
                                 entity.getId(),
                                 entity.getDisplayName(),
@@ -94,11 +84,7 @@ public class TableMetadataMapper {
         }
 
         public static ColumnMetadataEntity fromCreateDto(CreateColumnMetadataDto dto) {
-                String foreignKey = "";
-                if (dto.parent().isPresent()) {
-                        foreignKey = serializeObject(dto.parent().get());
-                }
-                return new ColumnMetadataEntity(null, dto.displayName(), dto.physicalName(), dto.type(), foreignKey);
+                return new ColumnMetadataEntity(null, dto.displayName(), dto.physicalName(), dto.type());
         }
 
         public static TableMetadataEntity fromDomain(FullTableMetadata domain) {
@@ -119,16 +105,11 @@ public class TableMetadataMapper {
         }
 
         public static ColumnMetadataEntity fromDomain(ColumnMetadata domain) {
-                String parent = "";
-                if (domain.getParent().isPresent()) {
-                        parent = serializeObject(domain.getParent().get());
-                }
                 return new ColumnMetadataEntity(
                         domain.getId(),
                         domain.getDisplayName(),
                         domain.getPhysicalName(),
-                        domain.getType(),
-                        parent
+                        domain.getType()
                 );
         }
 
