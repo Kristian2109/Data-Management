@@ -81,8 +81,11 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
-    public void deleteTable(Long tableId) {
+    public void deleteTable(String tableId) {
+        TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tableId)
+            .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableId));
 
+        repositoryJpa.delete(entity);
     }
 
     @Override

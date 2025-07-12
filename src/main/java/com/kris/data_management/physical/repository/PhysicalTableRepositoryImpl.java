@@ -192,6 +192,12 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         jdbcTemplate.update(sql, recordId);
     }
 
+    @Override
+    public void deleteTable(String tableName) {
+        validateSqlTerm(tableName);
+        jdbcTemplate.execute("DROP TABLE " + tableName);
+    }
+
     private void validateQuery(PhysicalQuery query) {
         query.select().forEach(s -> {
             validateSqlTerm(s.tableName());

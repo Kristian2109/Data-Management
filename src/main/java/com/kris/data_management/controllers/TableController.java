@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.UpdateColumnDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,13 +43,6 @@ public class TableController {
         return ResponseEntity.status(201).body(result);
     }
 
-    @PostMapping("/{tableId}/columns")
-    public ResponseEntity<ColumnMetadata> createColumn(@PathVariable String tableId,
-            @RequestBody CreateColumnDto columnDto) {
-        ColumnMetadata result = tableService.createColumn(tableId, columnDto);
-        return ResponseEntity.status(201).body(result);
-    }
-
     @GetMapping
     public ResponseEntity<List<BaseTableMetadata>> getTables() {
         return ResponseEntity.ok(tableService.getTablesForDatabase());
@@ -57,6 +51,19 @@ public class TableController {
     @GetMapping("/{tableId}")
     public ResponseEntity<FullTableMetadata> get(@PathVariable String tableId) {
         return ResponseEntity.ok(tableService.getById(tableId));
+    }
+
+    @DeleteMapping("/{tableId}")
+    public ResponseEntity<?> deleteTable(@PathVariable String tableId) {
+        tableService.deleteTable(tableId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/{tableId}/columns")
+    public ResponseEntity<ColumnMetadata> createColumn(@PathVariable String tableId,
+            @RequestBody CreateColumnDto columnDto) {
+        ColumnMetadata result = tableService.createColumn(tableId, columnDto);
+        return ResponseEntity.status(201).body(result);
     }
 
     @PostMapping("/{tableId}/records")

@@ -19,6 +19,6 @@ public interface TableMetadataRepository {
     FullTableMetadata addView(String tablePhysicalName, CreateTableViewDto viewDto);
 
     void updateColumn(String tableName, String columnName, UpdateColumnDto dto);
-    void deleteTable(Long tableId);
+    void deleteTable(String tableId);
     void deleteColumn(String tableId, String columnId);
 }

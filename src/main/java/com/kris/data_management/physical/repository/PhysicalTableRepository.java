@@ -25,4 +25,6 @@ public interface PhysicalTableRepository {
 
     void updateRecord(String tableName, Long recordId, UpdateRecordDto recordDto);
     void deleteRecord(String tableName, Long recordId);
+
+    void deleteTable(String tableName);
 }

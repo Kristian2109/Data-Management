@@ -24,7 +24,7 @@ public class TableService {
     private final PhysicalTableRepository physicalTableRepository;
     private final TableMetadataRepository tableMetadataRepository;
 
-    public TableService(PhysicalTableRepositoryImpl tableRepository,
+    public TableService(PhysicalTableRepository tableRepository,
                         TableMetadataRepository tableMetadataRepository) {
         this.physicalTableRepository = tableRepository;
         this.tableMetadataRepository = tableMetadataRepository;
@@ -56,6 +56,11 @@ public class TableService {
                 res.tableName(), columns);
 
         return this.tableMetadataRepository.createTable(tableMetadataCreate);
+    }
+
+    @Transactional
+    public void deleteTable(String tableName) {
+        tableMetadataRepository.deleteTable(tableName);
     }
 
     @Transactional
