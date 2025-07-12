@@ -2,6 +2,7 @@ package com.kris.data_management.services;
 
 import com.kris.data_management.logical.table.*;
 import com.kris.data_management.physical.dto.query.Pagination;
+import com.kris.data_management.physical.dto.record.QueryRecord;
 import com.kris.data_management.physical.dto.table.ColumnDataType;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
 import com.kris.data_management.physical.dto.record.CreateRecordDto;
@@ -101,6 +102,11 @@ public class TableService {
 
         FullTableMetadata table = tableMetadataRepository.addView(tableName, viewDto);
         return table.getViewByName(viewDto.name());
+    }
+
+    @Transactional
+    public void updateRecord(String tableName, Long recordId, CreateRecordDto record) {
+        physicalTableRepository.updateRecord(tableName, recordId, record);
     }
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,

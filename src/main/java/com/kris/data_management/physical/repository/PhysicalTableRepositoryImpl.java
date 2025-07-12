@@ -8,7 +8,7 @@ import com.kris.data_management.physical.dto.table.CreateTableDto;
 import com.kris.data_management.physical.dto.table.DatabaseColumnType;
 import com.kris.data_management.physical.dto.query.FilterOperator;
 import com.kris.data_management.physical.dto.query.Pagination;
-import com.kris.data_management.physical.dto.record.Record;
+import com.kris.data_management.physical.dto.record.QueryRecord;
 import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
 import com.kris.data_management.physical.dto.record.RecordColumnValue;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
@@ -146,7 +146,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         ).trim().replaceAll(" +", " ");
 
         List<Map<String, Object>> objects = jdbcTemplate.queryForList(querySql, queryParams.toArray());
-        List<Record> records = mapResultsToRecords(objects);
+        List<QueryRecord> records = mapResultsToRecords(objects);
 
         return new QueryResult(totalRecords, records);
     }
@@ -164,6 +164,25 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
                 "(" + rel.parentColumnName() + ")";
 
         jdbcTemplate.execute(query);
+    }
+
+    @Override
+    public void updateRecord(String tableName, Long recordId, CreateRecordDto recordDto) {
+        validateSqlTerm(tableName);
+
+        StringJoiner columnsSetters = new StringJoiner(", ");
+        List<String> values = new ArrayList<>();
+
+        for (RecordColumnValue columnValue : recordDto.columnValues()) {
+            validateSqlTerm(columnValue.columnName());
+            String currentColumn = columnValue.columnName() + " = ?";
+            columnsSetters.add(currentColumn);
+            values.add(columnValue.stringValue());
+        }
+
+        values.add(recordId.toString());
+        String sql = "UPDATE " + tableName + " SET " + columnsSetters + " WHERE id = ?";
+        jdbcTemplate.update(sql, values.toArray());
     }
 
     private void validateQuery(PhysicalQuery query) {
@@ -190,14 +209,14 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         });
     }
 
-    private List<Record> mapResultsToRecords(List<Map<String, Object>> objects) {
+    private List<QueryRecord> mapResultsToRecords(List<Map<String, Object>> objects) {
         return objects.stream().map(
                 obj -> {
                     List<ColumnValue> values = obj.values()
                             .stream()
                             .map(v -> new ColumnValue(v != null ? v.toString() : null))
                             .toList();
-                    return new Record(values);
+                    return new QueryRecord(values);
                 }).toList();
     }
 

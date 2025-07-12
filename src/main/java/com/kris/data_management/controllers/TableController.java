@@ -3,8 +3,10 @@ package com.kris.data_management.controllers;
 import java.util.List;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
+import com.kris.data_management.physical.dto.record.QueryRecord;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -76,5 +78,13 @@ public class TableController {
     @PostMapping("/{tableName}/views")
     public ResponseEntity<ViewMetadata> createView(@PathVariable String tableName, @RequestBody CreateTableViewDto viewDto) {
         return ResponseEntity.status(201).body(tableService.createView(tableName, viewDto));
+    }
+
+    @PatchMapping("/{tableId}/records/{recordId}")
+    public ResponseEntity<?> updateRecord(@PathVariable String tableId,
+                                          @PathVariable Long recordId,
+                                          @RequestBody CreateRecordDto record) {
+        tableService.updateRecord(tableId, recordId, record);
+        return ResponseEntity.status(200).build();
     }
 }
