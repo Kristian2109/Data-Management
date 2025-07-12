@@ -7,6 +7,7 @@ import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.FullTableMetadata;
+import com.kris.data_management.logical.table.UpdateColumnDto;
 
 public interface TableMetadataRepository {
     FullTableMetadata createTable(CreateTableMetadataDto tableDto);
@@ -16,6 +17,8 @@ public interface TableMetadataRepository {
     FullTableMetadata save(FullTableMetadata table);
 
     FullTableMetadata addView(String tablePhysicalName, CreateTableViewDto viewDto);
+
+    void updateColumn(String tableName, String columnName, UpdateColumnDto dto);
     void deleteTable(Long tableId);
     void deleteColumn(Long tableId, Long columnId);
 }

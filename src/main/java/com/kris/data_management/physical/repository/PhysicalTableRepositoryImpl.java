@@ -3,7 +3,7 @@ package com.kris.data_management.physical.repository;
 import com.kris.data_management.logical.table.CreateRelationshipDto;
 import com.kris.data_management.physical.dto.query.QueryRecordColumnValue;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
-import com.kris.data_management.physical.dto.record.CreateRecordDto;
+import com.kris.data_management.physical.dto.record.UpdateRecordDto;
 import com.kris.data_management.physical.dto.table.CreateTableDto;
 import com.kris.data_management.physical.dto.table.DatabaseColumnType;
 import com.kris.data_management.physical.dto.query.FilterOperator;
@@ -84,7 +84,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     }
 
     @Override
-    public void addRecord(String tableName, CreateRecordDto recordDto) {
+    public void addRecord(String tableName, UpdateRecordDto recordDto) {
         validateSqlTerm(tableName);
 
         StringJoiner columnNames = new StringJoiner(", ");
@@ -167,7 +167,7 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     }
 
     @Override
-    public void updateRecord(String tableName, Long recordId, CreateRecordDto recordDto) {
+    public void updateRecord(String tableName, Long recordId, UpdateRecordDto recordDto) {
         validateSqlTerm(tableName);
 
         StringJoiner columnsSetters = new StringJoiner(", ");

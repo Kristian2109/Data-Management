@@ -8,6 +8,7 @@ import com.kris.data_management.logical.entities.ViewMetadataEntity;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
 import com.kris.data_management.logical.table.CreateTableMetadataDto;
 import com.kris.data_management.logical.table.FullTableMetadata;
+import com.kris.data_management.logical.table.UpdateColumnDto;
 import com.kris.data_management.mappers.TableMetadataMapper;
 import org.springframework.stereotype.Repository;
 
@@ -67,6 +68,15 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
         entity.addView(viewMetadata);
         entity = repositoryJpa.save(entity);
         return TableMetadataMapper.toDomain(entity);
+    }
+
+    @Override
+    public void updateColumn(String tableName, String columnName, UpdateColumnDto dto) {
+        TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tableName)
+            .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableName));
+
+        entity.getColumnByName(columnName).setDisplayName(dto.displayName());
+        repositoryJpa.save(entity);
     }
 
     @Override

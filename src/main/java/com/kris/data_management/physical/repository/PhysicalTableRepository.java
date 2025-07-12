@@ -2,7 +2,7 @@ package com.kris.data_management.physical.repository;
 
 import com.kris.data_management.logical.table.CreateRelationshipDto;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
-import com.kris.data_management.physical.dto.record.CreateRecordDto;
+import com.kris.data_management.physical.dto.record.UpdateRecordDto;
 import com.kris.data_management.physical.dto.table.CreateTableDto;
 import com.kris.data_management.physical.dto.query.QueryResult;
 import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
@@ -15,7 +15,7 @@ public interface PhysicalTableRepository {
 
     String addColumn(String tableName, CreateColumnDto column);
 
-    void addRecord(String tableName, CreateRecordDto recordDto);
+    void addRecord(String tableName, UpdateRecordDto recordDto);
 
     void addRecords(String tableName, List<String> columnNames, List<List<String>> records);
 
@@ -23,6 +23,6 @@ public interface PhysicalTableRepository {
 
     void addForeignKeyConstraint(CreateRelationshipDto createRelationshipDto);
 
-    void updateRecord(String tableName, Long recordId, CreateRecordDto recordDto);
+    void updateRecord(String tableName, Long recordId, UpdateRecordDto recordDto);
     void deleteRecord(String tableName, Long recordId);
 }

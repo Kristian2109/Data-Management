@@ -4,7 +4,7 @@ import com.kris.data_management.logical.table.*;
 import com.kris.data_management.physical.dto.query.Pagination;
 import com.kris.data_management.physical.dto.table.ColumnDataType;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
-import com.kris.data_management.physical.dto.record.CreateRecordDto;
+import com.kris.data_management.physical.dto.record.UpdateRecordDto;
 import com.kris.data_management.physical.dto.table.CreateTableDto;
 import com.kris.data_management.logical.repository.tableMetadata.TableMetadataRepository;
 import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
@@ -80,7 +80,7 @@ public class TableService {
     }
 
     @Transactional
-    public void addRecord(String tableName, CreateRecordDto recordDto) {
+    public void addRecord(String tableName, UpdateRecordDto recordDto) {
         physicalTableRepository.addRecord(tableName, recordDto);
     }
 
@@ -104,13 +104,18 @@ public class TableService {
     }
 
     @Transactional
-    public void updateRecord(String tableName, Long recordId, CreateRecordDto record) {
+    public void updateRecord(String tableName, Long recordId, UpdateRecordDto record) {
         physicalTableRepository.updateRecord(tableName, recordId, record);
     }
 
     @Transactional
     public void deleteRecord(String tableName, Long recordId) {
         physicalTableRepository.deleteRecord(tableName, recordId);
+    }
+
+    @Transactional
+    public void updateColumn(String tableName, String columnName, UpdateColumnDto dto) {
+        tableMetadataRepository.updateColumn(tableName, columnName, dto);
     }
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,

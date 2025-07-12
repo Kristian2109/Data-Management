@@ -3,6 +3,7 @@ package com.kris.data_management.controllers;
 import java.util.List;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
+import com.kris.data_management.logical.table.UpdateColumnDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kris.data_management.physical.dto.record.AddRecordsBatchDto;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
-import com.kris.data_management.physical.dto.record.CreateRecordDto;
+import com.kris.data_management.physical.dto.record.UpdateRecordDto;
 import com.kris.data_management.physical.dto.table.CreateTableDto;
 import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.logical.table.ColumnMetadata;
@@ -59,7 +60,7 @@ public class TableController {
     }
 
     @PostMapping("/{tableId}/records")
-    public ResponseEntity<?> addRecord(@PathVariable String tableId, @RequestBody CreateRecordDto recordDto) {
+    public ResponseEntity<?> addRecord(@PathVariable String tableId, @RequestBody UpdateRecordDto recordDto) {
         tableService.addRecord(tableId, recordDto);
         return ResponseEntity.status(201).build();
     }
@@ -83,7 +84,7 @@ public class TableController {
     @PatchMapping("/{tableId}/records/{recordId}")
     public ResponseEntity<?> updateRecord(@PathVariable String tableId,
                                           @PathVariable Long recordId,
-                                          @RequestBody CreateRecordDto record) {
+                                          @RequestBody UpdateRecordDto record) {
         tableService.updateRecord(tableId, recordId, record);
         return ResponseEntity.status(200).build();
     }
@@ -92,6 +93,14 @@ public class TableController {
     public ResponseEntity<?> deleteRecord(@PathVariable String tableId,
                                           @PathVariable Long recordId) {
         tableService.deleteRecord(tableId, recordId);
+        return ResponseEntity.status(200).build();
+    }
+
+    @PatchMapping("/{tableName}/columns/{columnName}")
+    public ResponseEntity<?> updateColumn(@PathVariable String tableName,
+                                          @PathVariable String columnName,
+                                          @RequestBody UpdateColumnDto columnDto) {
+        tableService.updateColumn(tableName, columnName, columnDto);
         return ResponseEntity.status(200).build();
     }
 }
