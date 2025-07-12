@@ -20,5 +20,5 @@ public interface TableMetadataRepository {
 
     void updateColumn(String tableName, String columnName, UpdateColumnDto dto);
     void deleteTable(Long tableId);
-    void deleteColumn(Long tableId, Long columnId);
+    void deleteColumn(String tableId, String columnId);
 }

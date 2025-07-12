@@ -1,5 +1,6 @@
 package com.kris.data_management.logical.repository.tableMetadata;
 
+import com.kris.data_management.logical.entities.ColumnMetadataEntity;
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.common.exception.ResourceNotFoundException;
@@ -85,7 +86,12 @@ public class TableMetadataRepositoryImpl implements TableMetadataRepository {
     }
 
     @Override
-    public void deleteColumn(Long tableId, Long columnId) {
+    public void deleteColumn(String tableId, String columnId) {
+        TableMetadataEntity entity = repositoryJpa.findByPhysicalName(tableId)
+            .orElseThrow(() -> new ResourceNotFoundException("Table Metadata", tableId));
 
+        ColumnMetadataEntity columnToRemove = entity.getColumnByName(columnId);
+        entity.getColumns().remove(columnToRemove);
+        repositoryJpa.save(entity);
     }
 }

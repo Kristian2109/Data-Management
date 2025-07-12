@@ -118,6 +118,11 @@ public class TableService {
         tableMetadataRepository.updateColumn(tableName, columnName, dto);
     }
 
+    @Transactional
+    public void deleteColumn(String tableName, String columnName) {
+        tableMetadataRepository.deleteColumn(tableName, columnName);
+    }
+
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,
             String physicalColumn) {
         return new CreateColumnMetadataDto(c.displayName(), physicalColumn, c.type());

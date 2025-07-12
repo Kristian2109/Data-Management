@@ -103,4 +103,11 @@ public class TableController {
         tableService.updateColumn(tableName, columnName, columnDto);
         return ResponseEntity.status(200).build();
     }
+
+    @DeleteMapping("/{tableName}/columns/{columnName}")
+    public ResponseEntity<?> deleteColumn(@PathVariable String tableName,
+                                          @PathVariable String columnName) {
+        tableService.deleteColumn(tableName, columnName);
+        return ResponseEntity.status(200).build();
+    }
 }
