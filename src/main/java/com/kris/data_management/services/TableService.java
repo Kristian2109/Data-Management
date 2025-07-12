@@ -109,6 +109,11 @@ public class TableService {
         physicalTableRepository.updateRecord(tableName, recordId, record);
     }
 
+    @Transactional
+    public void deleteRecord(String tableName, Long recordId) {
+        physicalTableRepository.deleteRecord(tableName, recordId);
+    }
+
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,
             String physicalColumn) {
         return new CreateColumnMetadataDto(c.displayName(), physicalColumn, c.type());

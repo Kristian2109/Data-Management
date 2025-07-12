@@ -5,6 +5,7 @@ import java.util.List;
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.physical.dto.record.QueryRecord;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,6 +86,13 @@ public class TableController {
                                           @PathVariable Long recordId,
                                           @RequestBody CreateRecordDto record) {
         tableService.updateRecord(tableId, recordId, record);
+        return ResponseEntity.status(200).build();
+    }
+
+    @DeleteMapping("/{tableId}/records/{recordId}")
+    public ResponseEntity<?> deleteRecord(@PathVariable String tableId,
+                                          @PathVariable Long recordId) {
+        tableService.deleteRecord(tableId, recordId);
         return ResponseEntity.status(200).build();
     }
 }

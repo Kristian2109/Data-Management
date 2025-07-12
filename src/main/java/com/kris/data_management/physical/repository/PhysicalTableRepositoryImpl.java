@@ -184,6 +184,13 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
         String sql = "UPDATE " + tableName + " SET " + columnsSetters + " WHERE id = ?";
         jdbcTemplate.update(sql, values.toArray());
     }
+    @Override
+    public void deleteRecord(String tableName, Long recordId) {
+        validateSqlTerm(tableName);
+
+        String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+        jdbcTemplate.update(sql, recordId);
+    }
 
     private void validateQuery(PhysicalQuery query) {
         query.select().forEach(s -> {

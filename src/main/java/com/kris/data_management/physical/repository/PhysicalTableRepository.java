@@ -25,4 +25,5 @@ public interface PhysicalTableRepository {
     void addForeignKeyConstraint(CreateRelationshipDto createRelationshipDto);
 
     void updateRecord(String tableName, Long recordId, CreateRecordDto recordDto);
+    void deleteRecord(String tableName, Long recordId);
 }
