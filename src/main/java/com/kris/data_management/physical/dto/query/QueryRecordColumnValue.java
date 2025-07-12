@@ -1,9 +1,9 @@
-package com.kris.data_management.physical.dto.record;
+package com.kris.data_management.physical.dto.query;
 
-public class ColumnValue {
+public class QueryRecordColumnValue {
     private String stringValue;
 
-    public ColumnValue(String stringValue) {
+    public QueryRecordColumnValue(String stringValue) {
         this.stringValue = stringValue;
     }
 

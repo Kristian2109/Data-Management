@@ -1,14 +1,14 @@
 package com.kris.data_management.physical.repository;
 
 import com.kris.data_management.logical.table.CreateRelationshipDto;
-import com.kris.data_management.physical.dto.record.ColumnValue;
+import com.kris.data_management.physical.dto.query.QueryRecordColumnValue;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
 import com.kris.data_management.physical.dto.record.CreateRecordDto;
 import com.kris.data_management.physical.dto.table.CreateTableDto;
 import com.kris.data_management.physical.dto.table.DatabaseColumnType;
 import com.kris.data_management.physical.dto.query.FilterOperator;
 import com.kris.data_management.physical.dto.query.Pagination;
-import com.kris.data_management.physical.dto.record.QueryRecord;
+import com.kris.data_management.physical.dto.query.QueryRecord;
 import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
 import com.kris.data_management.physical.dto.record.RecordColumnValue;
 import com.kris.data_management.physical.exception.InvalidSqlIdentifierException;
@@ -219,9 +219,9 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     private List<QueryRecord> mapResultsToRecords(List<Map<String, Object>> objects) {
         return objects.stream().map(
                 obj -> {
-                    List<ColumnValue> values = obj.values()
+                    List<QueryRecordColumnValue> values = obj.values()
                             .stream()
-                            .map(v -> new ColumnValue(v != null ? v.toString() : null))
+                            .map(v -> new QueryRecordColumnValue(v != null ? v.toString() : null))
                             .toList();
                     return new QueryRecord(values);
                 }).toList();

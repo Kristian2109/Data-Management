@@ -3,7 +3,6 @@ package com.kris.data_management.controllers;
 import java.util.List;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
-import com.kris.data_management.physical.dto.record.QueryRecord;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

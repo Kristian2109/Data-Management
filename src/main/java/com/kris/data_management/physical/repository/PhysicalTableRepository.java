@@ -1,7 +1,6 @@
 package com.kris.data_management.physical.repository;
 
 import com.kris.data_management.logical.table.CreateRelationshipDto;
-import com.kris.data_management.physical.dto.record.QueryRecord;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
 import com.kris.data_management.physical.dto.record.CreateRecordDto;
 import com.kris.data_management.physical.dto.table.CreateTableDto;

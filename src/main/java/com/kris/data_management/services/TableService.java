@@ -2,7 +2,6 @@ package com.kris.data_management.services;
 
 import com.kris.data_management.logical.table.*;
 import com.kris.data_management.physical.dto.query.Pagination;
-import com.kris.data_management.physical.dto.record.QueryRecord;
 import com.kris.data_management.physical.dto.table.ColumnDataType;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
 import com.kris.data_management.physical.dto.record.CreateRecordDto;
