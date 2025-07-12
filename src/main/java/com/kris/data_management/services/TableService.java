@@ -61,6 +61,12 @@ public class TableService {
     @Transactional
     public void deleteTable(String tableName) {
         tableMetadataRepository.deleteTable(tableName);
+        physicalTableRepository.deleteTable(tableName);
+    }
+
+    @Transactional
+    public void updateTable(String tableName, UpdateTableDto dto) {
+        tableMetadataRepository.updateTable(tableName, dto);
     }
 
     @Transactional

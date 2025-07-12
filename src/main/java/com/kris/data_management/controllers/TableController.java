@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.UpdateColumnDto;
+import com.kris.data_management.logical.table.UpdateTableDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,6 +57,12 @@ public class TableController {
     @DeleteMapping("/{tableId}")
     public ResponseEntity<?> deleteTable(@PathVariable String tableId) {
         tableService.deleteTable(tableId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PatchMapping("/{tableId}")
+    public ResponseEntity<?> updateTable(@PathVariable String tableId, @RequestBody UpdateTableDto tableDto) {
+        tableService.updateTable(tableId, tableDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
