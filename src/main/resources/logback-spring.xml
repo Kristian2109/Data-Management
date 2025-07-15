@@ -8,6 +8,7 @@
                 <loggerName/>
                 <mdc/>
                 <message/>
+                <arguments/>
                 <stackTrace/>
             </providers>
         </encoder>

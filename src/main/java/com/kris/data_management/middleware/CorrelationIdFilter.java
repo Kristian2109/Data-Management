@@ -7,10 +7,14 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.UUID;
 
+@Order(1)
+@Component
 public class CorrelationIdFilter implements Filter {
     private static final String CORRELATION_ID_HEADER = "correlationId";
 
