@@ -26,12 +26,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(InternalServerError.class)
-  public ResponseEntity<Object> HandleInternalServerError(InternalServerError ex) {
+  public ResponseEntity<Object> handleInternalServerError(InternalServerError ex) {
     Map<String, String> errorDetails = new HashMap<>();
 
     errorDetails.put("message", ex.getMessage());
     errorDetails.put("description", ex.getDescription());
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<Object> handleIllegalArgumentError(IllegalArgumentException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
 }
