@@ -81,6 +81,9 @@ public class DatabaseService {
     public DatabaseMetadata getDatabase(Long id) {
         return databaseRepository.get(id);
     }
+    public DatabaseMetadata getDatabase(String  id) {
+        return databaseRepository.get(id);
+    }
 
     public java.util.List<DatabaseMetadata> getAllDatabases() {
         return databaseRepository.getAll();

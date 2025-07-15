@@ -23,11 +23,8 @@ public class DatabaseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DatabaseMetadata> getDatabase(@PathVariable Long id) {
+    public ResponseEntity<DatabaseMetadata> getDatabase(@PathVariable String id) {
         DatabaseMetadata database = databaseService.getDatabase(id);
-        if (database == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(database);
     }
 

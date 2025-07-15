@@ -1,5 +1,6 @@
 package com.kris.data_management.database.repository;
 
+import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.database.dto.DatabaseMetadata;
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
 import com.kris.data_management.mappers.DatabaseMetadataMapper;
@@ -38,6 +39,13 @@ public class DatabaseMetadataRepositoryImpl implements DatabaseMetadataRepositor
     public DatabaseMetadata get(Long id) {
         return jpaRepository.findById(id)
                 .map(DatabaseMetadataMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Database Metadata", id));
+    }
+
+    @Override
+    public DatabaseMetadata get(String physicalName) {
+        return jpaRepository.findByPhysicalName(physicalName)
+            .map(DatabaseMetadataMapper::toDto)
+            .orElseThrow(() -> new ResourceNotFoundException("Database Metadata", physicalName));
     }
 }
