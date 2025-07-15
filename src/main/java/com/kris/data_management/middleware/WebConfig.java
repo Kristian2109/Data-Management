@@ -1,4 +1,4 @@
-package com.kris.data_management.config;
+package com.kris.data_management.middleware;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

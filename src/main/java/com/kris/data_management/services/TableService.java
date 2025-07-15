@@ -11,7 +11,8 @@ import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
 import com.kris.data_management.physical.dto.query.PhysicalQuery;
 import com.kris.data_management.physical.dto.query.QueryResult;
 import com.kris.data_management.physical.repository.PhysicalTableRepository;
-import com.kris.data_management.physical.repository.PhysicalTableRepositoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class TableService {
     private final PhysicalTableRepository physicalTableRepository;
     private final TableMetadataRepository tableMetadataRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TableService.class);
 
     public TableService(PhysicalTableRepository tableRepository,
                         TableMetadataRepository tableMetadataRepository) {
@@ -32,6 +34,7 @@ public class TableService {
 
     @Transactional
     public FullTableMetadata createTable(CreateTableDto tableDto) {
+        logger.info("Begin table creation");
         CreatePhysicalTableResult res = physicalTableRepository.createTable(tableDto);
         Map<String, CreateColumnDto> dataTypeByDisplayName = tableDto.columns().stream()
                 .collect(Collectors.toMap(
