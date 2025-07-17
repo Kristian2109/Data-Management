@@ -3,6 +3,7 @@ package com.kris.data_management.controllers;
 import com.kris.data_management.database.dto.CreateDatabaseDto;
 import com.kris.data_management.database.dto.DatabaseMetadata;
 import com.kris.data_management.services.DatabaseService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class DatabaseController {
     }
 
     @PostMapping
-    public ResponseEntity<DatabaseMetadata> createDatabase(@RequestBody CreateDatabaseDto request) {
+    public ResponseEntity<DatabaseMetadata> createDatabase(@Valid @RequestBody CreateDatabaseDto request) {
         DatabaseMetadata createdDatabase = databaseService.createDatabase(request);
         return ResponseEntity.ok(createdDatabase);
     }

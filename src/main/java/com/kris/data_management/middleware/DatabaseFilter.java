@@ -23,16 +23,16 @@ public class DatabaseFilter extends OncePerRequestFilter {
         try {
             if (request.getRequestURI().startsWith("/databases")) {
                 filterChain.doFilter(request, response);
-            }
+            } else {
+                String dbName = request.getHeader(DATABASE_HEADER);
+                if (dbName == null || dbName.isBlank()) {
+                    throw new IllegalArgumentException("Invalid database Name");
+                }
 
-            String dbName = request.getHeader(DATABASE_HEADER);
-            if (dbName == null || dbName.isBlank()) {
-                throw new IllegalArgumentException("Invalid database Name");
+                DatabaseContext.setCurrentDatabase(dbName);
+                MDC.put(DATABASE_HEADER, dbName);
+                filterChain.doFilter(request, response);
             }
-
-            DatabaseContext.setCurrentDatabase(dbName);
-            MDC.put(DATABASE_HEADER, dbName);
-            filterChain.doFilter(request, response);
         } finally {
             DatabaseContext.clear();
             MDC.remove(DATABASE_HEADER);
