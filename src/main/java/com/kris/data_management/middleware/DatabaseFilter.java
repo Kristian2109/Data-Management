@@ -21,7 +21,8 @@ public class DatabaseFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            if (request.getRequestURI().startsWith("/databases")) {
+            String uri = request.getRequestURI();
+            if (uri.startsWith("/databases") || uri.startsWith("/actuator")) {
                 filterChain.doFilter(request, response);
             } else {
                 String dbName = request.getHeader(DATABASE_HEADER);
