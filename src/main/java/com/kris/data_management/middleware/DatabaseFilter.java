@@ -22,7 +22,7 @@ public class DatabaseFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String uri = request.getRequestURI();
-            if (uri.startsWith("/databases") || uri.startsWith("/actuator")) {
+            if (!uri.startsWith("/tables") || !uri.startsWith("/relationship")) {
                 filterChain.doFilter(request, response);
             } else {
                 String dbName = request.getHeader(DATABASE_HEADER);
