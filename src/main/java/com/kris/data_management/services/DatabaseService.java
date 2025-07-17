@@ -2,6 +2,7 @@ package com.kris.data_management.services;
 
 import com.kris.data_management.database.dto.CreateDatabaseDto;
 import com.kris.data_management.database.dto.DatabaseMetadata;
+import com.kris.data_management.database.dto.UpdateDatabaseDto;
 import com.kris.data_management.database.repository.DatabaseMetadataRepository;
 import com.kris.data_management.utils.StorageUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +32,11 @@ public class DatabaseService {
         createDatabaseSchema(physicalName);
 
         return databaseRepository.create(physicalName, db.getDisplayName());
+    }
+
+    @Transactional
+    public DatabaseMetadata update(String id, UpdateDatabaseDto dto) {
+        return databaseRepository.update(id, dto);
     }
 
     public void createDatabaseSchema(String schemaName) {

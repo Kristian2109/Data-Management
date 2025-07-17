@@ -2,6 +2,7 @@ package com.kris.data_management.database.repository;
 
 import com.kris.data_management.common.exception.ResourceNotFoundException;
 import com.kris.data_management.database.dto.DatabaseMetadata;
+import com.kris.data_management.database.dto.UpdateDatabaseDto;
 import com.kris.data_management.database.entities.DatabaseMetadataEntity;
 import com.kris.data_management.mappers.DatabaseMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +48,14 @@ public class DatabaseMetadataRepositoryImpl implements DatabaseMetadataRepositor
         return jpaRepository.findByPhysicalName(physicalName)
             .map(DatabaseMetadataMapper::toDto)
             .orElseThrow(() -> new ResourceNotFoundException("Database Metadata", physicalName));
+    }
+
+    @Override
+    public DatabaseMetadata update(String id, UpdateDatabaseDto updateDatabaseDto) {
+        DatabaseMetadataEntity entity = jpaRepository.findByPhysicalName(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Database Metadata", id));
+
+        entity.setDisplayName(updateDatabaseDto.displayName());
+        return DatabaseMetadataMapper.toDto(jpaRepository.save(entity));
     }
 }
