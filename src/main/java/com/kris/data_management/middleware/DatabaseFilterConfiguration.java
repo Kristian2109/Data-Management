@@ -11,7 +11,7 @@ public class DatabaseFilterConfiguration {
         FilterRegistrationBean<DatabaseFilter> registrationBean = new FilterRegistrationBean<>();
 
         registrationBean.setFilter(new DatabaseFilter());
-        registrationBean.addUrlPatterns("/tables", "/relationship");
+        registrationBean.addUrlPatterns("/tables/*", "/relationships/*", "/tables", "/relationships");
         registrationBean.setOrder(1);
 
         return registrationBean;

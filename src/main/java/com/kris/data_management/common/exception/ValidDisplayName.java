@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @NotBlank
-@Size(min = 5, max = 100)
+@Size(min = 2, max = 100)
 public @interface ValidDisplayName {
     String message() default "Invalid name";
     Class<?>[] groups() default {};
