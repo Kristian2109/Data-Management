@@ -19,7 +19,6 @@ public class DatabaseFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String uri = request.getRequestURI();
             String dbName = request.getHeader(DATABASE_HEADER);
             if (dbName == null || dbName.isBlank()) {
                 throw new IllegalArgumentException("Invalid database Name");
