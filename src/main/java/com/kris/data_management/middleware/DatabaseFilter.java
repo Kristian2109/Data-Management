@@ -12,8 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Order(1)
-@Component
 public class DatabaseFilter extends OncePerRequestFilter {
     private static final String DATABASE_HEADER = "X-Database-Name";
 
@@ -22,18 +20,15 @@ public class DatabaseFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String uri = request.getRequestURI();
-            if (!uri.startsWith("/tables") || !uri.startsWith("/relationship")) {
-                filterChain.doFilter(request, response);
-            } else {
-                String dbName = request.getHeader(DATABASE_HEADER);
-                if (dbName == null || dbName.isBlank()) {
-                    throw new IllegalArgumentException("Invalid database Name");
-                }
-
-                DatabaseContext.setCurrentDatabase(dbName);
-                MDC.put(DATABASE_HEADER, dbName);
-                filterChain.doFilter(request, response);
+            String dbName = request.getHeader(DATABASE_HEADER);
+            if (dbName == null || dbName.isBlank()) {
+                throw new IllegalArgumentException("Invalid database Name");
             }
+
+            DatabaseContext.setCurrentDatabase(dbName);
+            MDC.put(DATABASE_HEADER, dbName);
+            filterChain.doFilter(request, response);
+
         } finally {
             DatabaseContext.clear();
             MDC.remove(DATABASE_HEADER);
