@@ -48,4 +48,9 @@ public class RelationshipRepositoryImpl implements RelationshipRepository{
                 .map(RelationshipMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Relationship> getByTableId() {
+        return null;
+    }
 }

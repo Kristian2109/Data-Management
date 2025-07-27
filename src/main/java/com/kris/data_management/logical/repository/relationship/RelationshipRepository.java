@@ -10,4 +10,6 @@ public interface RelationshipRepository {
     Relationship getById(Long id);
     Relationship create(String name, FullTableMetadata parentTable, FullTableMetadata childTable, String parentColumnName, String childColumnName);
     List<Relationship> getAll();
+
+    List<Relationship> getByTableId();
 }
