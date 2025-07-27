@@ -48,6 +48,14 @@ public class RelationshipService {
         this.tableMetadataRepository.addColumn(dto.childTableName(),
             new CreateColumnMetadataDto(dto.childForeignKeyColumnDisplayName(), physicalName, ColumnDataType.NUMBER));
 
+        this.physicalTableRepository.addForeignKeyConstraint(new CreateRelationshipDto(
+            dto.childForeignKeyColumnDisplayName(),
+            dto.parentTableName(),
+            "id",
+            dto.childTableName(),
+            physicalName
+        ));
+
         FullTableMetadata parentTable = tableMetadataRepository.getTable(dto.parentTableName());
         FullTableMetadata childTable = tableMetadataRepository.getTable(dto.childTableName());
 
