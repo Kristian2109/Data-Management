@@ -27,7 +27,7 @@ public class RelationshipsController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Relationship>> getAllRelationships() {
+    public ResponseEntity<List<Relationship>> getRelationships() {
         return ResponseEntity.ok(relationshipService.getAllRelationships());
     }
 

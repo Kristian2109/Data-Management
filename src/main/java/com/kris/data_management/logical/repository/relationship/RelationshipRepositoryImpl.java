@@ -50,7 +50,9 @@ public class RelationshipRepositoryImpl implements RelationshipRepository{
     }
 
     @Override
-    public List<Relationship> getByTableId() {
-        return null;
+    public List<Relationship> getByTableId(String tableId) {
+        return relationshipRepository.findAllByTableIdNative(tableId)
+            .stream().map(RelationshipMapper::toDomain)
+            .collect(Collectors.toList());
     }
 }

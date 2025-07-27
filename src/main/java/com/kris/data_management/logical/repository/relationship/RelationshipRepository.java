@@ -11,5 +11,5 @@ public interface RelationshipRepository {
     Relationship create(String name, FullTableMetadata parentTable, FullTableMetadata childTable, String parentColumnName, String childColumnName);
     List<Relationship> getAll();
 
-    List<Relationship> getByTableId();
+    List<Relationship> getByTableId(String tableId);
 }

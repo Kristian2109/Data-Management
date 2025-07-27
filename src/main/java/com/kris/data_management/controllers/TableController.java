@@ -3,8 +3,10 @@ package com.kris.data_management.controllers;
 import java.util.List;
 
 import com.kris.data_management.logical.table.BaseTableMetadata;
+import com.kris.data_management.logical.table.Relationship;
 import com.kris.data_management.logical.table.UpdateColumnDto;
 import com.kris.data_management.logical.table.UpdateTableDto;
+import com.kris.data_management.services.RelationshipService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +36,11 @@ import com.kris.data_management.services.TableService;
 public class TableController {
 
     private final TableService tableService;
+    private final RelationshipService relationshipService;
 
-    public TableController(TableService tableService) {
+    public TableController(TableService tableService, RelationshipService relationshipService) {
         this.tableService = tableService;
+        this.relationshipService = relationshipService;
     }
 
     @PostMapping
@@ -73,6 +77,7 @@ public class TableController {
         ColumnMetadata result = tableService.createColumn(tableId, columnDto);
         return ResponseEntity.status(201).body(result);
     }
+
 
     @PostMapping("/{tableId}/records")
     public ResponseEntity<?> addRecord(@PathVariable String tableId, @Valid @RequestBody UpdateRecordDto recordDto) {
@@ -124,5 +129,10 @@ public class TableController {
                                           @PathVariable String columnName) {
         tableService.deleteColumn(tableName, columnName);
         return ResponseEntity.status(200).build();
+    }
+
+    @GetMapping("/{tableName}/relationships")
+    public ResponseEntity<List<Relationship>> getTableRelationships(@PathVariable String tableName) {
+        return ResponseEntity.ok(relationshipService.getTableRelationships(tableName));
     }
 }
