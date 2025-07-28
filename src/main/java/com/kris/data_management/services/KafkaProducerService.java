@@ -1,6 +1,6 @@
 package com.kris.data_management.services;
 
-import com.kris.data_management.common.exception.ColumnDeletedEvent;
+import com.kris.no_code_common.KafkaEvents.ColumnDeletedEvent;
 import jakarta.annotation.PostConstruct;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;

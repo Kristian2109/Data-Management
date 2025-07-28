@@ -1,18 +1,28 @@
 package com.kris.data_management.services;
 
-import com.kris.data_management.common.exception.ColumnDeletedEvent;
+
 import com.kris.data_management.common.exception.TextSearchResponseDto;
-import com.kris.data_management.logical.table.*;
-import com.kris.data_management.physical.dto.query.Pagination;
-import com.kris.data_management.physical.dto.table.ColumnDataType;
-import com.kris.data_management.physical.dto.table.CreateColumnDto;
-import com.kris.data_management.physical.dto.record.UpdateRecordDto;
-import com.kris.data_management.physical.dto.table.CreateTableDto;
+import com.kris.data_management.database.DatabaseContext;
 import com.kris.data_management.logical.repository.tableMetadata.TableMetadataRepository;
-import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
+import com.kris.data_management.logical.table.BaseTableMetadata;
+import com.kris.data_management.logical.table.ColumnMetadata;
+import com.kris.data_management.logical.table.CreateColumnMetadataDto;
+import com.kris.data_management.logical.table.CreateTableMetadataDto;
+import com.kris.data_management.logical.table.CreateTableViewDto;
+import com.kris.data_management.logical.table.FullTableMetadata;
+import com.kris.data_management.logical.table.UpdateColumnDto;
+import com.kris.data_management.logical.table.UpdateTableDto;
+import com.kris.data_management.logical.table.ViewMetadata;
+import com.kris.data_management.physical.dto.query.Pagination;
 import com.kris.data_management.physical.dto.query.PhysicalQuery;
 import com.kris.data_management.physical.dto.query.QueryResult;
+import com.kris.data_management.physical.dto.record.UpdateRecordDto;
+import com.kris.data_management.physical.dto.table.ColumnDataType;
+import com.kris.data_management.physical.dto.table.CreateColumnDto;
+import com.kris.data_management.physical.dto.table.CreatePhysicalTableResult;
+import com.kris.data_management.physical.dto.table.CreateTableDto;
 import com.kris.data_management.physical.repository.PhysicalTableRepository;
+import com.kris.no_code_common.KafkaEvents.ColumnDeletedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -140,7 +150,9 @@ public class TableService {
     @Transactional
     public void deleteColumn(String tableName, String columnName) {
         tableMetadataRepository.deleteColumn(tableName, columnName);
-        kafka.sendColumnDeletedEvent(new ColumnDeletedEvent(tableName, columnName));
+        kafka.sendColumnDeletedEvent(
+            new ColumnDeletedEvent(DatabaseContext.getCurrentDatabase(), tableName, columnName)
+        );
     }
 
     @Transactional(readOnly = true)
