@@ -1,5 +1,6 @@
 package com.kris.data_management.physical.repository;
 
+import com.kris.data_management.common.exception.TextSearchResponseDto;
 import com.kris.data_management.logical.table.CreateRelationshipDto;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
 import com.kris.data_management.physical.dto.record.UpdateRecordDto;
@@ -27,4 +28,7 @@ public interface PhysicalTableRepository {
     void deleteRecord(String tableName, Long recordId);
 
     void deleteTable(String tableName);
+
+    List<List<String>> searchRecords(String tableName, String searchText, List<String> columnNames);
+
 }

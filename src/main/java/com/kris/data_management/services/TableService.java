@@ -1,5 +1,6 @@
 package com.kris.data_management.services;
 
+import com.kris.data_management.common.exception.TextSearchResponseDto;
 import com.kris.data_management.logical.table.*;
 import com.kris.data_management.physical.dto.query.Pagination;
 import com.kris.data_management.physical.dto.table.ColumnDataType;
@@ -135,6 +136,21 @@ public class TableService {
     @Transactional
     public void deleteColumn(String tableName, String columnName) {
         tableMetadataRepository.deleteColumn(tableName, columnName);
+    }
+
+    @Transactional(readOnly = true)
+    public TextSearchResponseDto searchRecordsByText(String tableName, String text) {
+        FullTableMetadata tableMetadata = tableMetadataRepository.getTable(tableName);
+        List<ColumnMetadata> columns = tableMetadata.getColumns();
+        List<String> columnNames = columns.stream().map(ColumnMetadata::getPhysicalName).toList();
+
+        List<List<String>> records = physicalTableRepository.searchRecords(tableName, text, columnNames);
+
+        List<TextSearchResponseDto.ColumnDto> columnsDto = columns.stream()
+            .map(c -> new TextSearchResponseDto.ColumnDto(c.getDisplayName(), c.getPhysicalName()))
+            .toList();
+
+        return new TextSearchResponseDto(columnsDto, records);
     }
 
     private static CreateColumnMetadataDto mapToColumnMetadata(CreateColumnDto c,

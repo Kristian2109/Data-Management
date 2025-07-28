@@ -2,6 +2,7 @@ package com.kris.data_management.logical.repository.tableMetadata;
 
 import java.util.List;
 
+import com.kris.data_management.common.exception.TextSearchResponseDto;
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.CreateTableViewDto;
 import com.kris.data_management.logical.table.CreateColumnMetadataDto;
@@ -16,7 +17,6 @@ public interface TableMetadataRepository {
     FullTableMetadata getTable(String tablePhysicalName);
     List<BaseTableMetadata> getAllTables();
     FullTableMetadata save(FullTableMetadata table);
-
     void updateTable(String tableId, UpdateTableDto dto);
     FullTableMetadata addView(String tablePhysicalName, CreateTableViewDto viewDto);
     void updateColumn(String tableName, String columnName, UpdateColumnDto dto);

@@ -2,6 +2,7 @@ package com.kris.data_management.controllers;
 
 import java.util.List;
 
+import com.kris.data_management.common.exception.TextSearchResponseDto;
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.Relationship;
 import com.kris.data_management.logical.table.UpdateColumnDto;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kris.data_management.physical.dto.record.AddRecordsBatchDto;
@@ -134,5 +136,10 @@ public class TableController {
     @GetMapping("/{tableName}/relationships")
     public ResponseEntity<List<Relationship>> getTableRelationships(@PathVariable String tableName) {
         return ResponseEntity.ok(relationshipService.getTableRelationships(tableName));
+    }
+
+    @GetMapping("{tableName}/records/search")
+    public ResponseEntity<TextSearchResponseDto> textSearchInRecords(@PathVariable String tableName, @RequestParam String searchText) {
+        return ResponseEntity.ok(tableService.searchRecordsByText(tableName, searchText));
     }
 }

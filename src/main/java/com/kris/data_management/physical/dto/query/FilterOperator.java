@@ -5,4 +5,5 @@ public enum FilterOperator {
     NOT_EQUAL,
     GREATER,
     LESS,
+    IN
 }

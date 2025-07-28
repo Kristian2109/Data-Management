@@ -1,5 +1,6 @@
 package com.kris.data_management.physical.repository;
 
+import com.kris.data_management.common.exception.TextSearchResponseDto;
 import com.kris.data_management.logical.table.CreateRelationshipDto;
 import com.kris.data_management.physical.dto.query.QueryRecordColumnValue;
 import com.kris.data_management.physical.dto.table.CreateColumnDto;
@@ -19,7 +20,9 @@ import com.kris.data_management.utils.StorageUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.validation.ObjectError;
 
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -196,6 +199,28 @@ public class PhysicalTableRepositoryImpl implements PhysicalTableRepository {
     public void deleteTable(String tableName) {
         validateSqlTerm(tableName);
         jdbcTemplate.execute("DROP TABLE " + tableName);
+    }
+
+    @Override
+    public List<List<String>> searchRecords(String tableName, String text, List<String> columnNames) {
+        String selectClause = String.join(", ", columnNames);
+        String whereClause = columnNames.stream()
+            .map(name -> name + " LIKE " + "'%" + text + "%'")
+            .collect(Collectors.joining(" OR "));
+
+        String sql  = "SELECT " + selectClause + " FROM " + tableName + " WHERE " + whereClause;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            List<String> record = new ArrayList<>();
+
+            for (int i = 0; i < columnNames.size(); i++) {
+                Object currentObject = rs.getObject(i + 1);
+                String currentValue = currentObject == null ? "" : currentObject.toString();
+                record.add(currentValue);
+            }
+
+            return record;
+        });
     }
 
     private void validateQuery(PhysicalQuery query) {

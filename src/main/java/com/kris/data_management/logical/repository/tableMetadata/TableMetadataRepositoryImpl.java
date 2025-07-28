@@ -1,5 +1,6 @@
 package com.kris.data_management.logical.repository.tableMetadata;
 
+import com.kris.data_management.common.exception.TextSearchResponseDto;
 import com.kris.data_management.logical.entities.ColumnMetadataEntity;
 import com.kris.data_management.logical.table.BaseTableMetadata;
 import com.kris.data_management.logical.table.CreateTableViewDto;
