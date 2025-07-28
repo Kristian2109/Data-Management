@@ -1,5 +1,6 @@
 package com.kris.data_management.services;
 
+import com.kris.data_management.common.exception.ColumnDeletedEvent;
 import com.kris.data_management.common.exception.TextSearchResponseDto;
 import com.kris.data_management.logical.table.*;
 import com.kris.data_management.physical.dto.query.Pagination;
@@ -25,12 +26,15 @@ import java.util.stream.Collectors;
 public class TableService {
     private final PhysicalTableRepository physicalTableRepository;
     private final TableMetadataRepository tableMetadataRepository;
+
+    private final KafkaProducerService kafka;
     private static final Logger logger = LoggerFactory.getLogger(TableService.class);
 
     public TableService(PhysicalTableRepository tableRepository,
-                        TableMetadataRepository tableMetadataRepository) {
+                        TableMetadataRepository tableMetadataRepository, KafkaProducerService kafka) {
         this.physicalTableRepository = tableRepository;
         this.tableMetadataRepository = tableMetadataRepository;
+        this.kafka = kafka;
     }
 
     @Transactional
@@ -136,6 +140,7 @@ public class TableService {
     @Transactional
     public void deleteColumn(String tableName, String columnName) {
         tableMetadataRepository.deleteColumn(tableName, columnName);
+        kafka.sendColumnDeletedEvent(new ColumnDeletedEvent(tableName, columnName));
     }
 
     @Transactional(readOnly = true)
